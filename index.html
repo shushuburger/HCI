@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FineDust</title>
+    <link rel="stylesheet" href="./styles/main.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+    <!-- 상단바 -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm px-4">
+        <span class="navbar-brand fw-bold">FineDust</span>
+        <div class="ms-auto">
+            <button id="calendarBtn" class="btn me-2">
+                <img src="./assets/icons/calendar.png" alt="달력 아이콘" width="20" height="20">
+            </button>
+            <button id="alertBtn" class="btn">
+                <img src="./assets/icons/notification.png" alt="알림 아이콘" width="20" height="20">
+            </button>
+        </div>
+    </nav>
+
+    <!-- 메인 영역 -->
+    <div class="container mb-5 mt-3">
+        <div class="row">
+            <!-- 좌측: 지도, 시간, 토글 -->
+            <div class="col-lg-6 text-center">
+                <div class="location-time d-flex justify-content-center gap-3">
+                    <p id="location" class="mb-0">서울특별시 노원구</p>
+                    <p id="time" class="mb-0">2025.04.08 오후 5:00 (17시)</p>
+                </div>
+                <div class="dust-toggle">
+                    <button id="pm10Btn" class="btn btn-success">미세먼지</button>
+                    <button id="pm25Btn" class="btn btn-outline-secondary">초미세먼지</button>
+                </div>
+                <div class="map-section">
+                    <img src="./assets/seoul_map.png" alt="서울 지도" id="seoulMap">
+                    <img src="./assets/gauge.png" alt="미세먼지 수치 분류" id="gauge">
+                </div>
+            </div>
+
+            <!-- 우측: 그래프 + 대처방안 -->
+            <div class="col-lg-6">
+                <div class="graph-section">
+                    <div class="gauge">
+                        <h5>미세먼지 (PM10)</h5>
+                        <p class="text-danger">나쁨 (125)</p>
+                        <button id="infoBtn" class="btn">
+                            <img src="./assets/icons/information.png" alt="상세정보" width="20" height="20">
+                        </button>
+                    </div>
+                    <div class="gauge">
+                        <h5>초미세먼지 (PM2.5)</h5>
+                        <p class="text-warning">보통 (34)</p>
+                        <button id="infoBtn" class="btn">
+                            <img src="./assets/icons/information.png" alt="상세정보" width="20" height="20">
+                        </button>
+                    </div>
+                    <div class="gauge">
+                        <h5>오존 (O₃)</h5>
+                        <p class="text-warning">보통 (0.054)</p>
+                        <button id="infoBtn" class="btn">
+                            <img src="./assets/icons/information.png" alt="상세정보" width="20" height="20">
+                        </button>
+                    </div>
+                </div>
+
+                <div class="guide-section">
+                    <h2>맞춤형 미세먼지 대처 방안</h2>
+                    <div class="selectors d-flex justify-content-center gap-4 text-center align-items-end">
+                        <div class="d-flex flex-column align-items-start">
+                            <label for="ageSelect" class="form-label fw-semibold">연령대</label>
+                            <select id="ageSelect" class="form-select">
+                                <option value="adult">성인</option>
+                                <option value="elderly">노년층</option>
+                            </select>
+                        </div>
+                        <div class="d-flex flex-column align-items-start">
+                            <label for="healthSelect" class="form-label fw-semibold">건강상태</label>
+                            <select id="healthSelect" class="form-select">
+                                <option value="healthy">천식 없음</option>
+                                <option value="asthma">천식 있음</option>
+                            </select>
+                        </div>
+                        <div class="d-flex flex-column align-items-start">
+                            <label for="activitySelect" class="form-label fw-semibold">활동유형</label>
+                            <select id="activitySelect" class="form-select">
+                                <option value="indoor">주로 실내활동</option>
+                                <option value="outdoor">주로 실외활동</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="recommendations mt-3">
+                        <p><img src="./assets/icons/indoor.png" alt="실내 아이콘">오늘은 실외 활동을 피하세요.</p>
+                        <p><img src="./assets/icons/mask.png" alt="마스크 아이콘">외출 시 KF94 마스크를 착용하세요.</p>
+                        <p><img src="./assets/icons/refresh.png" alt="공기청정기 아이콘">환기를 자제하시고 공기청정기를 가동하세요.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="./scripts/main.js"></script>
+</body>
+
+</html>
