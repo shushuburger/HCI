@@ -1,0 +1,177 @@
+/* main.css */
+
+/* 전체 기본 설정 */
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+/* 상단바 */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.nav-buttons button {
+    font-size: 1.25rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin-left: 1rem;
+}
+
+/* 지역 및 시간 */
+.location-time {
+    text-align: center;
+    padding: 1rem;
+    font-size: 1.1rem;
+}
+
+/* 미세먼지/초미세먼지 토글 */
+.dust-toggle {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    padding: 0.5rem;
+}
+
+.dust-toggle button {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 20px;
+    background-color: #e0e0e0;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.dust-toggle button.active {
+    background-color: #4caf50;
+    color: white;
+}
+
+/* 지도 영역 */
+.map-section {
+    text-align: center;
+    padding: 1rem;
+}
+
+#seoulMap {
+    width: 90%;
+    max-width: 600px;
+}
+
+#gauge {
+    width: 90%;
+    max-width: 600px;
+}
+
+.map-legend {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 0.5rem;
+}
+
+.legend {
+    padding: 0.3rem 0.6rem;
+    border-radius: 10px;
+    color: white;
+    font-size: 0.9rem;
+}
+
+.legend.good {
+    background-color: #4caf50;
+}
+
+.legend.normal {
+    background-color: #cddc39;
+}
+
+.legend.bad {
+    background-color: #ff9800;
+}
+
+.legend.very-bad {
+    background-color: #f44336;
+}
+
+/* 그래프 영역 */
+.graph-section {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem;
+    gap: 1rem;
+}
+
+.graph-section .gauge {
+    flex: 1;
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 1rem;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* 대처 방안 */
+.selectors .form-label {
+    margin-bottom: 0.25rem;
+}
+
+.selectors .form-select {
+    min-width: 150px;
+}
+
+.guide-section {
+    background-color: #ffffff;
+    margin: 1rem;
+    padding: 1rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.guide-section h2 {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.selectors {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.selectors select {
+    padding: 0.5rem;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+.recommendations {
+    text-align: center;
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+.recommendations p {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.recommendations img {
+    width: 24px;
+    height: 24px;
+}
