@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     fillOpacity: 1
                 },
                 onEachFeature: (feature, layer) => {
-                    const name = feature.properties.SIG_KOR_NM;
+                    const name = feature.properties.name;
                     layer.bindTooltip(name, {
                         permanent: true,          // 항상 보임
                         direction: 'center',      // 중앙에 위치
