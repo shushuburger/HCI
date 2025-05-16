@@ -2,12 +2,23 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <title>캘린더</title>
+  <title>내 구글 캘린더</title>
+
+  <!-- FullCalendar CSS -->
   <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css" rel="stylesheet" />
+  <!-- FullCalendar JS -->
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
+
+  <!-- Google Identity Services -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <!-- Google API JS -->
   <script src="https://apis.google.com/js/api.js"></script>
+
   <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+    }
     #calendar {
       max-width: 800px;
       margin: 40px auto;
@@ -17,6 +28,7 @@
 <body>
   <h1>📅 내 구글 캘린더</h1>
 
+  <!-- Google 로그인 버튼 자동 생성 -->
   <div id="g_id_onload"
        data-client_id="262480863168-9i3c8g4i6e97432l4d708t3ttc8j24qc.apps.googleusercontent.com"
        data-callback="handleCredentialResponse"
@@ -25,6 +37,7 @@
 
   <div class="g_id_signin" data-type="standard"></div>
 
+  <!-- FullCalendar 렌더링 영역 -->
   <div id="calendar"></div>
 
   <script src="./scripts/calendar.js"></script>

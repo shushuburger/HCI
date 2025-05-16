@@ -6,26 +6,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let accessToken = null;
 
-  // 구글 로그인 완료 후 토큰 받아오기
+  // 로그인 완료 시 호출되는 함수
   window.handleCredentialResponse = async function(response) {
     const jwt = response.credential;
     const base64Url = jwt.split('.')[1];
     const userInfo = JSON.parse(atob(base64Url));
-    console.log('✅ 로그인 성공:', userInfo);
+    console.log('👤 로그인한 사용자:', userInfo.name);
 
+    // access token 요청
     google.accounts.oauth2.initTokenClient({
       client_id: CLIENT_ID,
       scope: SCOPES,
       callback: (tokenResponse) => {
         if (tokenResponse.access_token) {
           accessToken = tokenResponse.access_token;
-          initCalendar(); // 바로 달력 렌더링
+          loadCalendarEvents(); // 바로 일정 불러오기
         }
       }
     }).requestAccessToken();
   };
 
-  function initCalendar() {
+  // 일정 불러오고 FullCalendar에 표시
+  function loadCalendarEvents() {
     gapi.load('client', () => {
       gapi.client.init({
         apiKey: API_KEY,
@@ -35,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         return gapi.client.calendar.events.list({
           calendarId: 'primary',
-          timeMin: new Date('2025-01-01').toISOString(), // 원하는 시작 시점
+          timeMin: new Date('2025-01-01').toISOString(),
           timeMax: new Date('2026-12-31').toISOString(),
           showDeleted: false,
           singleEvents: true,
@@ -57,12 +59,16 @@ document.addEventListener('DOMContentLoaded', () => {
           headerToolbar: {
             left: 'prev,next today',
             center: 'title',
-            right: 'dayGridMonth,timeGridWeek'
+            right: 'dayGridMonth,timeGridWeek,listWeek'
           },
-          events: calendarEvents,
-          locale: 'ko'
+          locale: 'ko',
+          events: calendarEvents
         });
+
         calendar.render();
+      }).catch(err => {
+        console.error('캘린더 API 오류:', err);
+        document.getElementById('calendar').innerHTML = '❌ 일정 불러오기 실패';
       });
     });
   }
