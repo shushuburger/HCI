@@ -3,23 +3,27 @@ document.addEventListener('DOMContentLoaded', () => {
     zoomControl: true,
     attributionControl: false,
     preferCanvas: true
-  }).setView([36.5, 127.5], 7); // 전국 중심
+  }).setView([36.5, 127.5], 7); // 초기 중심 (전국)
 
-  // 지도 배경 타일 제거 (흰 배경)
-  // 아무 것도 안 넣으면 배경 없음 (우리는 GeoJSON만 표시)
+  // ✅ 내 위치 받아서 중심만 이동
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      const lat = pos.coords.latitude;
+      const lon = pos.coords.longitude;
+      map.setView([lat, lon], 11); // 중심만 내 위치로 이동
+      L.marker([lat, lon]).addTo(map).bindPopup('📍 현재 위치').openPopup();
+    },
+    (err) => {
+      console.error('❌ 위치 정보 오류:', err);
+      alert('위치 정보를 가져올 수 없습니다.');
+    }
+  );
 
-  // GeoJSON 로드 및 시도 필터링 (예: 울산)
+  // ✅ 전국 전체 GeoJSON 표시 (필터 X)
   fetch('/HCI/assets/geo/korea-sigungu.json')
     .then(res => res.json())
     .then(geojson => {
-      const filtered = {
-        ...geojson,
-        features: geojson.features.filter(
-          f => f.properties.SIDO_KOR_NM === '울산광역시' // 여기 수정 가능
-        )
-      };
-
-      L.geoJSON(filtered, {
+      L.geoJSON(geojson, {
         style: {
           color: '#000',
           weight: 1.5,
