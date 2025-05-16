@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // 아무 것도 안 넣으면 배경 없음 (우리는 GeoJSON만 표시)
 
   // GeoJSON 로드 및 시도 필터링 (예: 울산)
-  fetch('./assets/geo/korea-sigungu.json')
+  fetch('/HCI/assets/geo/korea-sigungu.json')
     .then(res => res.json())
     .then(geojson => {
       const filtered = {
