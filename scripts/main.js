@@ -1,32 +1,42 @@
 document.addEventListener('DOMContentLoaded', () => {
-  // 1. 지도 생성 (기본 중심은 한국)
-  const map = L.map('map').setView([36.5, 127.5], 7);
+  const map = L.map('map', {
+    zoomControl: true,
+    attributionControl: false,
+    preferCanvas: true
+  }).setView([36.5, 127.5], 7); // 전국 중심
 
-  // 2. 타일 레이어 추가 (배경 지도)
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 18
-  }).addTo(map);
+  // 지도 배경 타일 제거 (흰 배경)
+  // 아무 것도 안 넣으면 배경 없음 (우리는 GeoJSON만 표시)
 
-  // 3. 현재 위치 요청
-  navigator.geolocation.getCurrentPosition(
-    (position) => {
-      const lat = position.coords.latitude;
-      const lon = position.coords.longitude;
+  // GeoJSON 로드 및 시도 필터링 (예: 울산)
+  fetch('./assets/geo/korea-sigungu.json')
+    .then(res => res.json())
+    .then(geojson => {
+      const filtered = {
+        ...geojson,
+        features: geojson.features.filter(
+          f => f.properties.SIDO_KOR_NM === '울산광역시' // 여기 수정 가능
+        )
+      };
 
-      console.log('✅ 현재 위치 가져옴');
-      console.log('위도:', lat);
-      console.log('경도:', lon);
-
-      // 지도 중심을 현재 위치로 이동
-      map.setView([lat, lon], 12);
-
-      // 마커 찍기
-      const marker = L.marker([lat, lon]).addTo(map);
-      marker.bindPopup('📍 현재 위치').openPopup();
-    },
-    (error) => {
-      console.error('❌ 위치 정보 가져오기 실패:', error);
-      alert('위치 정보를 가져올 수 없습니다.');
-    }
-  );
+      L.geoJSON(filtered, {
+        style: {
+          color: '#000',
+          weight: 1.5,
+          fillColor: '#fff',
+          fillOpacity: 1
+        },
+        onEachFeature: (feature, layer) => {
+          const name = feature.properties.SIG_KOR_NM;
+          layer.bindTooltip(name, {
+            permanent: false,
+            direction: 'center',
+            className: 'region-tooltip'
+          });
+        }
+      }).addTo(map);
+    })
+    .catch(err => {
+      console.error('❌ GeoJSON 로드 오류:', err);
+    });
 });
