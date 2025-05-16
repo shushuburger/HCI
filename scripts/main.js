@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   );
 
-  // ✅ GeoJSON 로드
+  // ✅ GeoJSON 전체 로드
   fetch('/HCI/assets/geo/korea-sigungu.json')
     .then(res => res.json())
     .then(geojson => {
@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
           // ✅ 중심 좌표 계산
           const center = getFeatureCenter(feature.geometry);
 
-          // ✅ 지도에 텍스트 툴팁 추가
+          // ✅ 항상 보이는 레이블 (중심 텍스트)
           L.tooltip({
             permanent: true,
             direction: 'center',
@@ -45,6 +45,14 @@ document.addEventListener('DOMContentLoaded', () => {
             .setContent(name)
             .setLatLng(center)
             .addTo(map);
+
+          // ✅ 클릭 시 팝업 표시
+          layer.on('click', () => {
+            L.popup()
+              .setLatLng(center)
+              .setContent(`📍 <strong>${name}</strong>`)
+              .openOn(map);
+          });
         }
       }).addTo(map);
     })
