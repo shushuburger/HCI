@@ -1,4 +1,4 @@
-const CLIENT_ID = '262480863168-aigt8noiav2k6lkcenhr3a1njpmkjdt9.apps.googleusercontent.com';
+const CLIENT_ID = '262480863168-9i3c8g4i6e97432l4d708t3ttc8j24qc.apps.googleusercontent.com';
 const API_KEY = 'AIzaSyCj5cR1M_IWWo2ApvMTDtkS1Wgwb7pHIeU';
 
 // Google Calendar API scope
