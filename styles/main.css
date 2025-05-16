@@ -10,6 +10,10 @@ body {
 }
 
 /* 상단바 */
+#header {
+    height: 56px;
+}
+
 .navbar {
     display: flex;
     justify-content: space-between;
