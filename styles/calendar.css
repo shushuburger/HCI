@@ -3,6 +3,29 @@ body {
     text-align: center;
 }
 
+/* 상단바 */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.nav-buttons button {
+    font-size: 1.25rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin-left: 1rem;
+}
+
 #calendar {
     max-width: 800px;
     margin: 40px auto;
