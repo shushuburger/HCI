@@ -4,37 +4,44 @@ document.addEventListener('DOMContentLoaded', () => {
   const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest';
   const SCOPES = 'https://www.googleapis.com/auth/calendar.readonly';
 
-  let accessToken = null;
+  let accessToken = localStorage.getItem('access_token');
 
-  // 로그인 완료 시 호출되는 함수
-  window.handleCredentialResponse = async function(response) {
+  // ⏱ access token이 있다면 바로 캘린더 불러오기 시도
+  if (accessToken) {
+    console.log('✅ 저장된 토큰 있음, 바로 캘린더 렌더링');
+    loadCalendarEvents(accessToken);
+  }
+
+  // 🟡 로그인 완료 시 호출
+  window.handleCredentialResponse = (response) => {
     const jwt = response.credential;
     const base64Url = jwt.split('.')[1];
     const userInfo = JSON.parse(atob(base64Url));
     console.log('👤 로그인한 사용자:', userInfo.name);
 
-    // access token 요청
+    // access_token 요청
     google.accounts.oauth2.initTokenClient({
       client_id: CLIENT_ID,
       scope: SCOPES,
       callback: (tokenResponse) => {
         if (tokenResponse.access_token) {
           accessToken = tokenResponse.access_token;
-          loadCalendarEvents(); // 바로 일정 불러오기
+          localStorage.setItem('access_token', accessToken); // ✅ 저장
+          document.getElementById('loginContainer').style.display = 'none';
+          loadCalendarEvents(accessToken);
         }
       }
     }).requestAccessToken();
   };
 
-  // 일정 불러오고 FullCalendar에 표시
-  function loadCalendarEvents() {
+  // 📅 캘린더 이벤트 로딩 함수
+  function loadCalendarEvents(token) {
     gapi.load('client', () => {
       gapi.client.init({
         apiKey: API_KEY,
         discoveryDocs: [DISCOVERY_DOC]
       }).then(() => {
-        gapi.client.setToken({ access_token: accessToken });
-
+        gapi.client.setToken({ access_token: token });
         return gapi.client.calendar.events.list({
           calendarId: 'primary',
           timeMin: new Date('2025-01-01').toISOString(),
@@ -67,8 +74,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         calendar.render();
       }).catch(err => {
-        console.error('캘린더 API 오류:', err);
-        document.getElementById('calendar').innerHTML = '❌ 일정 불러오기 실패';
+        console.error('❌ 캘린더 불러오기 실패:', err);
+        localStorage.removeItem('access_token'); // 🔧 실패 시 토큰 제거
+        document.getElementById('loginContainer').style.display = 'block';
       });
     });
   }
