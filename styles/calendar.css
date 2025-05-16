@@ -30,6 +30,14 @@ body {
     margin-left: 1rem;
 }
 
+.fc-event {
+  background-color: #3788d8 !important;
+  color: #fff !important;
+  font-weight: normal !important;
+  border: none !important;
+  border-radius: 4px !important;
+}
+
 #calendar {
     max-width: 800px;
     margin: 40px auto;
