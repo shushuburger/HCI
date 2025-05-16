@@ -71,5 +71,9 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('calendar').innerHTML = '❌ 일정 불러오기 실패';
       });
     });
+
+    console.log('📅 FullCalendar에 표시할 데이터:', calendarEvents);
+console.log('📅 FullCalendar 요소 찾음:', calendarEl);
+
   }
 });
