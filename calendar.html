@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
   <meta charset="UTF-8" />
   <title>자동 로그인 캘린더</title>
@@ -11,27 +12,33 @@
   <!-- Google API / GIS -->
   <script src="https://apis.google.com/js/api.js"></script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
-
-  <style>
-    body { font-family: sans-serif; text-align: center; }
-    #calendar { max-width: 800px; margin: 40px auto; }
-    #loginContainer { margin-top: 20px; }
-  </style>
+  <link rel="stylesheet" href="./styles/calendar.css">
 </head>
+
 <body>
-  <h1>📅 내 구글 캘린더</h1>
+  <!-- 상단바 -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm px-4">
+    <span class="navbar-brand fw-bold">FineDust</span>
+    <div class="ms-auto">
+      <button id="calendarBtn" class="btn me-2">
+        <img src="./assets/icons/calendar.png" alt="달력 아이콘" width="20" height="20">
+      </button>
+      <button id="alertBtn" class="btn">
+        <img src="./assets/icons/notification.png" alt="알림 아이콘" width="20" height="20">
+      </button>
+    </div>
+  </nav>
 
   <div id="calendar"></div>
 
   <div id="loginContainer">
-    <div id="g_id_onload"
-        data-client_id="262480863168-9i3c8g4i6e97432l4d708t3ttc8j24qc.apps.googleusercontent.com"
-        data-callback="handleCredentialResponse"
-        data-auto_prompt="false">
+    <div id="g_id_onload" data-client_id="262480863168-9i3c8g4i6e97432l4d708t3ttc8j24qc.apps.googleusercontent.com"
+      data-callback="handleCredentialResponse" data-auto_prompt="false">
     </div>
     <div class="g_id_signin" data-type="standard"></div>
   </div>
 
   <script src="./scripts/calendar.js"></script>
 </body>
+
 </html>

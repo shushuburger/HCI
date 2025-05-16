@@ -6,13 +6,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let accessToken = localStorage.getItem('access_token');
 
-  // ⏱ access token이 있다면 바로 캘린더 불러오기 시도
+  // access token이 있다면 바로 캘린더 불러오기 시도
   if (accessToken) {
-    console.log('✅ 저장된 토큰 있음, 바로 캘린더 렌더링');
+    console.log('저장된 토큰 있음, 바로 캘린더 렌더링');
     loadCalendarEvents(accessToken);
   }
 
-  // 🟡 로그인 완료 시 호출
+  // 로그인 완료 시 호출
   window.handleCredentialResponse = (response) => {
     const jwt = response.credential;
     const base64Url = jwt.split('.')[1];
@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
       callback: (tokenResponse) => {
         if (tokenResponse.access_token) {
           accessToken = tokenResponse.access_token;
-          localStorage.setItem('access_token', accessToken); // ✅ 저장
+          localStorage.setItem('access_token', accessToken); // 저장
           document.getElementById('loginContainer').style.display = 'none';
           loadCalendarEvents(accessToken);
         }
@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }).requestAccessToken();
   };
 
-  // 📅 캘린더 이벤트 로딩 함수
+  // 캘린더 이벤트 로딩 함수
   function loadCalendarEvents(token) {
     gapi.load('client', () => {
       gapi.client.init({
@@ -74,8 +74,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         calendar.render();
       }).catch(err => {
-        console.error('❌ 캘린더 불러오기 실패:', err);
-        localStorage.removeItem('access_token'); // 🔧 실패 시 토큰 제거
+        console.error('캘린더 불러오기 실패:', err);
+        localStorage.removeItem('access_token'); // 실패 시 토큰 제거
         document.getElementById('loginContainer').style.display = 'block';
       });
     });
