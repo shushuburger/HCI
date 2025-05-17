@@ -22,10 +22,10 @@ document.addEventListener('DOMContentLoaded', () => {
     .then(groupAvg => {
       groupAvgMap = groupAvg;
 
-      fetch('/assets/geo/code_to_name_map.json')
+      fetch('./assets/geo/code_to_name_map.json')
         .then(res => res.json())
         .then(codeToNameMap => {
-          fetch('/assets/geo/korea-sigungu.json')
+          fetch('./assets/geo/korea-sigungu.json')
             .then(res => res.json())
             .then(geojson => {
               L.geoJSON(geojson, {
