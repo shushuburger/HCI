@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     .then(codeMap => {
       codeToFullnameMap = codeMap;
 
-      return fetch('./assets/data/group_avg_cleaned_fixed.json');
+      return fetch('./assets/data/group_avg.json');
     })
     .then(res => res.json())
     .then(avgMap => {
