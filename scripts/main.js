@@ -32,8 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(data => {
           const region = data.documents.find(doc => doc.region_type === 'B');
           if (region) {
-            const code = region.code.substring(0, 5);
-            const fullName = codeToFullnameMap[code] || `${region.region_1depth_name} ${region.region_2depth_name}`;
+            const fullName = `${region.region_1depth_name} ${region.region_2depth_name}`;
             locationText.textContent = fullName;
           }
         })
