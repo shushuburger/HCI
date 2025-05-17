@@ -16,7 +16,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const locationText = document.getElementById('location');
   const timeText = document.getElementById('time');
 
-  // ✅ 먼저 code → fullname 매핑 파일을 로드
   let codeToFullnameMap = {};
   fetch('/HCI/assets/geo/code_to_fullname_map.json')
     .then(res => res.json())
@@ -43,6 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const code = region.code.substring(0, 5);
             const fullName = codeToFullnameMap[code] || `${region.region_1depth_name} ${region.region_2depth_name}`;
             locationText.textContent = fullName;
+            fetchAirData(region.region_1depth_name, region.region_2depth_name);
           }
         })
         .catch(err => {
@@ -89,8 +89,14 @@ document.addEventListener('DOMContentLoaded', () => {
                   .setContent(`📍 <strong>${name}</strong>`)
                   .openOn(map);
 
-                locationText.textContent = codeToFullnameMap[code] || name;
+                const fullName = codeToFullnameMap[code] || name;
+                locationText.textContent = fullName;
                 timeText.textContent = formatTime(new Date());
+
+                const parts = fullName.split(' ');
+                const sido = parts[0];
+                const gugun = parts[1] || '';
+                fetchAirData(sido, gugun);
               });
             }
           }).addTo(map);
@@ -127,7 +133,7 @@ function formatTime(date) {
 }
 
 function fetchAirData(sido, gugun) {
-  const serviceKey = 'MNUICj9LF0yMX9b9cMQiBVz62JWYaqaGxBOIATmwvQgzkfdHQjzCouGaBLIzyg6MYGQOHqefVCRf3E23XoqVGA%3D%3D'; // 🔁 발급받은 인증키로 교체
+  const serviceKey = 'MNUICj9LF0yMX9b9cMQiBVz62JWYaqaGxBOIATmwvQgzkfdHQjzCouGaBLIzyg6MYGQOHqefVCRf3E23XoqVGA%3D%3D';
   const url = `https://apis.data.go.kr/B552584/ArpltnInforInqireSvc/getCtprvnRltmMesureDnsty?serviceKey=${serviceKey}&returnType=json&numOfRows=100&pageNo=1&sidoName=${sido}&ver=1.0`;
 
   fetch(url)
@@ -178,9 +184,3 @@ function getGradeText(type, value) {
 
   return `${value}`;
 }
-
-// 현재 위치 기반 구군 분석 후:
-fetchAirData(region.region_1depth_name, region.region_2depth_name);
-
-// 지도 클릭 시:
-fetchAirData(sido, gugun);
