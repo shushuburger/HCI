@@ -69,6 +69,12 @@ body {
     background-color: white;
 }
 
+#myLocationBtn {
+    border-radius: 3px;
+    color: black;
+    font-weight: bold;
+}
+
 .leaflet-tooltip.region-tooltip {
     background: transparent;
     border: none;
