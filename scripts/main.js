@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let groupAvgMap = {};
 
-  fetch('/assets/data/group_avg.json')
+  fetch('./assets/data/group_avg.json')
     .then(res => res.json())
     .then(groupAvg => {
       groupAvgMap = groupAvg;
@@ -159,4 +159,22 @@ function formatTime(date) {
   const period = hour < 12 ? '오전' : '오후';
   const hour12 = hour % 12 === 0 ? 12 : hour % 12;
   return `${year}.${month}.${day} ${period} ${hour12}:${minute} (${hour}시)`;
+}
+
+function fetchAirData(sido, gugun) {
+  const serviceKey = 'MNUICj9LF0yMX9b9cMQiBVz62JWYaqaGxBOIATmwvQgzkfdHQjzCouGaBLIzyg6MYGQOHqefVCRf3E23XoqVGA%3D%3D';
+  const url = `https://apis.data.go.kr/B552584/ArpltnInforInqireSvc/getCtprvnRltmMesureDnsty?serviceKey=${serviceKey}&returnType=json&numOfRows=100&pageNo=1&sidoName=${sido}&ver=1.0`;
+
+  fetch(url)
+    .then(res => res.json())
+    .then(data => {
+      const list = data.response.body.items;
+      const target = list.find(item =>
+        item.cityName === gugun ||
+        item.stationName.includes(gugun) ||
+        item.stationName.includes(gugun.replace('구', '').replace('시', ''))
+      );
+      updateGraphSection(target);
+    })
+    .catch(err => console.error('❌ 대기오염 API 오류:', err));
 }
