@@ -1,6 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
   const calendarBtn = document.getElementById('calendarBtn');
-
   if (calendarBtn) {
     calendarBtn.addEventListener('click', () => {
       window.location.href = 'calendar.html';
@@ -16,52 +15,80 @@ document.addEventListener('DOMContentLoaded', () => {
   const locationText = document.getElementById('location');
   const timeText = document.getElementById('time');
 
-  fetch('/HCI/assets/geo/code_to_name_map.json')
+  let groupAvgMap = {};
+
+  fetch('/assets/data/group_avg.json')
     .then(res => res.json())
-    .then(codeToNameMap => {
-      fetch('/HCI/assets/geo/korea-sigungu.json')
+    .then(groupAvg => {
+      groupAvgMap = groupAvg;
+
+      fetch('/assets/geo/code_to_name_map.json')
         .then(res => res.json())
-        .then(geojson => {
-          L.geoJSON(geojson, {
-            style: {
-              color: '#000',
-              weight: 1.5,
-              fillColor: '#fff',
-              fillOpacity: 1
-            },
-            onEachFeature: (feature, layer) => {
-              const code = feature.properties.code.toString().padStart(5, '0');
-              const name = codeToNameMap[code] || feature.properties.name;
-              const center = getFeatureCenter(feature.geometry);
+        .then(codeToNameMap => {
+          fetch('/assets/geo/korea-sigungu.json')
+            .then(res => res.json())
+            .then(geojson => {
+              L.geoJSON(geojson, {
+                style: feature => {
+                  const code = feature.properties.code.toString().padStart(5, '0');
+                  const name = codeToNameMap[code] || feature.properties.name;
+                  const avg = groupAvgMap[name];
+                  const pm10 = avg?.PM10;
+                  return {
+                    color: '#000',
+                    weight: 1.5,
+                    fillColor: getColorByPm10(pm10),
+                    fillOpacity: 0.8
+                  };
+                },
+                onEachFeature: (feature, layer) => {
+                  const code = feature.properties.code.toString().padStart(5, '0');
+                  const name = codeToNameMap[code] || feature.properties.name;
+                  const center = getFeatureCenter(feature.geometry);
 
-              L.tooltip({
-                permanent: true,
-                direction: 'center',
-                className: 'region-tooltip'
-              })
-                .setContent(name)
-                .setLatLng(center)
-                .addTo(map);
+                  const avg = groupAvgMap[name];
+                  const pm10 = avg?.PM10?.toFixed(1);
+                  const pm25 = avg?.['PM2.5']?.toFixed(1);
+                  const o3 = avg?.O3?.toFixed(3);
 
-              layer.on('click', () => {
-                L.popup()
-                  .setLatLng(center)
-                  .setContent(`📍 <strong>${name}</strong>`)
-                  .openOn(map);
+                  const tooltipText = pm10
+                    ? `${name}<br>PM10: ${pm10}㎍/㎥`
+                    : name;
 
-                locationText.textContent = name;
-                timeText.textContent = formatTime(new Date());
+                  L.tooltip({
+                    permanent: true,
+                    direction: 'center',
+                    className: 'region-tooltip'
+                  })
+                    .setContent(name)
+                    .setLatLng(center)
+                    .addTo(map);
 
-                const parts = name.split(' ');
-                const sido = parts[0];
-                const gugun = parts[1] || '';
-                fetchAirData(sido, gugun);
-              });
-            }
-          }).addTo(map);
+                  layer.on('click', () => {
+                    locationText.textContent = name;
+                    timeText.textContent = formatTime(new Date());
+
+                    L.popup()
+                      .setLatLng(center)
+                      .setContent(`
+                        📍 <strong>${name}</strong><br>
+                        PM10: ${pm10 ?? '-'}<br>
+                        PM2.5: ${pm25 ?? '-'}<br>
+                        O₃: ${o3 ?? '-'}
+                      `)
+                      .openOn(map);
+
+                    const parts = name.split(' ');
+                    const sido = parts[0];
+                    const gugun = parts[1] || '';
+                    fetchAirData(sido, gugun);
+                  });
+                }
+              }).addTo(map);
+            });
         });
     })
-    .catch(err => console.error('❌ JSON 매핑 로드 오류:', err));
+    .catch(err => console.error('❌ group_avg.json 로딩 오류:', err));
 
   navigator.geolocation.getCurrentPosition(
     (pos) => {
@@ -98,6 +125,15 @@ document.addEventListener('DOMContentLoaded', () => {
   );
 });
 
+// 색상 구간 설정 함수
+function getColorByPm10(pm10) {
+  if (pm10 === null || pm10 === undefined || isNaN(pm10)) return '#ccc';
+  if (pm10 <= 30) return '#66c2a5';      // 좋음 (초록)
+  if (pm10 <= 80) return '#ffd92f';      // 보통 (노랑)
+  if (pm10 <= 150) return '#fc8d62';     // 나쁨 (주황)
+  return '#e31a1c';                      // 매우 나쁨 (빨강)
+}
+
 function getFeatureCenter(geometry) {
   let coords = [];
   if (geometry.type === 'Polygon') {
@@ -123,97 +159,4 @@ function formatTime(date) {
   const period = hour < 12 ? '오전' : '오후';
   const hour12 = hour % 12 === 0 ? 12 : hour % 12;
   return `${year}.${month}.${day} ${period} ${hour12}:${minute} (${hour}시)`;
-}
-
-function fetchAirData(sido, gugun) {
-  const serviceKey = 'MNUICj9LF0yMX9b9cMQiBVz62JWYaqaGxBOIATmwvQgzkfdHQjzCouGaBLIzyg6MYGQOHqefVCRf3E23XoqVGA%3D%3D';
-  const url = `https://apis.data.go.kr/B552584/ArpltnInforInqireSvc/getCtprvnRltmMesureDnsty?serviceKey=${serviceKey}&returnType=json&numOfRows=100&pageNo=1&sidoName=${sido}&ver=1.0`;
-
-  fetch(url)
-    .then(res => res.json())
-    .then(data => {
-      const list = data.response.body.items;
-      const target = list.find(item =>
-        item.cityName === gugun ||
-        item.stationName.includes(gugun) ||
-        item.stationName.includes(gugun.replace('구', '').replace('시', ''))
-      );
-      console.log('📦 찾은 시도:', sido, '구군:', gugun, '→ 매칭 결과:', target);
-      updateGraphSection(target);
-    })
-    .catch(err => console.error('❌ 대기오염 API 오류:', err));
-}
-
-function updateGraphSection(data) {
-  if (!data) return;
-
-  const pm10 = parseInt(data.pm10Value);
-  const pm25 = parseInt(data.pm25Value);
-  const ozone = parseFloat(data.o3Value);
-
-  const pm10El = document.querySelector('#pm10');
-  const pm25El = document.querySelector('#pm25');
-  const ozoneEl = document.querySelector('#ozone');
-
-  pm10El.textContent = getGradeText('PM10', pm10);
-  pm25El.textContent = getGradeText('PM2.5', pm25);
-  ozoneEl.textContent = getGradeText('O3', ozone);
-
-  // Optional: 클래스 갱신 (색상 동적 적용)
-  updateColorClass(pm10El, 'PM10', pm10);
-  updateColorClass(pm25El, 'PM2.5', pm25);
-  updateColorClass(ozoneEl, 'O3', ozone);
-}
-
-function updateColorClass(element, type, value) {
-  element.className = '';
-  if (value === null || isNaN(value)) return;
-
-  if (type === 'PM10') {
-    if (value <= 30) element.classList.add('text-success');
-    else if (value <= 80) element.classList.add('text-warning');
-    else if (value <= 150) element.classList.add('text-danger');
-    else element.classList.add('text-dark');
-  }
-
-  if (type === 'PM2.5') {
-    if (value <= 15) element.classList.add('text-success');
-    else if (value <= 35) element.classList.add('text-warning');
-    else if (value <= 75) element.classList.add('text-danger');
-    else element.classList.add('text-dark');
-  }
-
-  if (type === 'O3') {
-    if (value <= 0.03) element.classList.add('text-success');
-    else if (value <= 0.09) element.classList.add('text-warning');
-    else if (value <= 0.15) element.classList.add('text-danger');
-    else element.classList.add('text-dark');
-  }
-}
-
-function getGradeText(type, value) {
-  if (value === null || isNaN(value)) return '정보 없음';
-
-  if (type === 'PM10') {
-    if (value <= 30) return `좋음 (${value})`;
-    if (value <= 80) return `보통 (${value})`;
-    if (value <= 150) return `나쁨 (${value})`;
-    return `매우나쁨 (${value})`;
-  }
-
-  if (type === 'PM2.5') {
-    if (value <= 15) return `좋음 (${value})`;
-    if (value <= 35) return `보통 (${value})`;
-    if (value <= 75) return `나쁨 (${value})`;
-    return `매우나쁨 (${value})`;
-  }
-
-  if (type === 'O3') {
-    if (value <= 0.03) return `좋음 (${value})`;
-    if (value <= 0.09) return `보통 (${value})`;
-    if (value <= 0.15) return `나쁨 (${value})`;
-    return `매우나쁨 (${value})`;
-  }
-
-  return `${value}`;
 }
