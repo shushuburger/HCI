@@ -161,20 +161,40 @@ function formatTime(date) {
   return `${year}.${month}.${day} ${period} ${hour12}:${minute} (${hour}시)`;
 }
 
-function fetchAirData(sido, gugun) {
-  const serviceKey = 'MNUICj9LF0yMX9b9cMQiBVz62JWYaqaGxBOIATmwvQgzkfdHQjzCouGaBLIzyg6MYGQOHqefVCRf3E23XoqVGA%3D%3D';
-  const url = `https://apis.data.go.kr/B552584/ArpltnInforInqireSvc/getCtprvnRltmMesureDnsty?serviceKey=${serviceKey}&returnType=json&numOfRows=100&pageNo=1&sidoName=${sido}&ver=1.0`;
+// function fetchAirData(sido, gugun) {
+//   const serviceKey = 'MNUICj9LF0yMX9b9cMQiBVz62JWYaqaGxBOIATmwvQgzkfdHQjzCouGaBLIzyg6MYGQOHqefVCRf3E23XoqVGA%3D%3D';
+//   const url = `https://apis.data.go.kr/B552584/ArpltnInforInqireSvc/getCtprvnRltmMesureDnsty?serviceKey=${serviceKey}&returnType=json&numOfRows=100&pageNo=1&sidoName=${sido}&ver=1.0`;
 
-  fetch(url)
-    .then(res => res.json())
-    .then(data => {
-      const list = data.response.body.items;
-      const target = list.find(item =>
-        item.cityName === gugun ||
-        item.stationName.includes(gugun) ||
-        item.stationName.includes(gugun.replace('구', '').replace('시', ''))
-      );
-      updateGraphSection(target);
-    })
-    .catch(err => console.error('❌ 대기오염 API 오류:', err));
+//   fetch(url)
+//     .then(res => res.json())
+//     .then(data => {
+//       const list = data.response.body.items;
+//       const target = list.find(item =>
+//         item.cityName === gugun ||
+//         item.stationName.includes(gugun) ||
+//         item.stationName.includes(gugun.replace('구', '').replace('시', ''))
+//       );
+//       updateGraphSection(target);
+//     })
+//     .catch(err => console.error('❌ 대기오염 API 오류:', err));
+// }
+
+function updateGraphSection(data) {
+  if (!data) return;
+
+  const pm10 = parseInt(data.pm10Value);
+  const pm25 = parseInt(data.pm25Value);
+  const ozone = parseFloat(data.o3Value);
+
+  const pm10El = document.querySelector('#pm10');
+  const pm25El = document.querySelector('#pm25');
+  const ozoneEl = document.querySelector('#ozone');
+
+  pm10El.textContent = getGradeText('PM10', pm10);
+  pm25El.textContent = getGradeText('PM2.5', pm25);
+  ozoneEl.textContent = getGradeText('O3', ozone);
+
+  updateColorClass(pm10El, 'PM10', pm10);
+  updateColorClass(pm25El, 'PM2.5', pm25);
+  updateColorClass(ozoneEl, 'O3', ozone);
 }
