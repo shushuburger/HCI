@@ -8,6 +8,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const locationText = document.getElementById('location');
   const timeText = document.getElementById('time');
 
+  // ✅ 먼저 code → fullname 매핑 파일을 로드
+  let codeToFullnameMap = {};
+  fetch('/HCI/assets/geo/code_to_fullname_map.json')
+    .then(res => res.json())
+    .then(json => { codeToFullnameMap = json; });
+
   navigator.geolocation.getCurrentPosition(
     (pos) => {
       const lat = pos.coords.latitude;
@@ -26,9 +32,9 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(data => {
           const region = data.documents.find(doc => doc.region_type === 'B');
           if (region) {
-            const sido = region.region_1depth_name;
-            const sigungu = region.region_2depth_name;
-            locationText.textContent = `${sido} ${sigungu}`;
+            const code = region.code.substring(0, 5);
+            const fullName = codeToFullnameMap[code] || `${region.region_1depth_name} ${region.region_2depth_name}`;
+            locationText.textContent = fullName;
           }
         })
         .catch(err => {
@@ -60,10 +66,6 @@ document.addEventListener('DOMContentLoaded', () => {
               const name = codeToNameMap[code] || feature.properties.name;
               const center = getFeatureCenter(feature.geometry);
 
-              // ✅ 광역시/시 정보 추출
-              const fullSido = extractSidoFromName(name);
-              const fullName = `${fullSido} ${name}`;
-
               L.tooltip({
                 permanent: true,
                 direction: 'center',
@@ -76,10 +78,10 @@ document.addEventListener('DOMContentLoaded', () => {
               layer.on('click', () => {
                 L.popup()
                   .setLatLng(center)
-                  .setContent(`📍 <strong>${fullName}</strong>`)
+                  .setContent(`📍 <strong>${name}</strong>`)
                   .openOn(map);
 
-                locationText.textContent = fullName;
+                locationText.textContent = codeToFullnameMap[code] || name;
                 timeText.textContent = formatTime(new Date());
               });
             }
@@ -114,19 +116,4 @@ function formatTime(date) {
   const period = hour < 12 ? '오전' : '오후';
   const hour12 = hour % 12 === 0 ? 12 : hour % 12;
   return `${year}.${month}.${day} ${period} ${hour12}:${minute} (${hour}시)`;
-}
-
-// ✅ 시군구 이름으로부터 광역시 이름 유추하는 간단 로직 (지역 코드 기준)
-function extractSidoFromName(name) {
-  const keywordMap = {
-    '서울': '서울특별시', '부산': '부산광역시', '대구': '대구광역시',
-    '인천': '인천광역시', '광주': '광주광역시', '대전': '대전광역시',
-    '울산': '울산광역시', '세종': '세종특별자치시', '수원': '경기도', '성남': '경기도',
-    '고양': '경기도', '용인': '경기도', '창원': '경상남도', '전주': '전라북도',
-    '청주': '충청북도', '천안': '충청남도', '포항': '경상북도', '제주': '제주특별자치도'
-  };
-  for (const key in keywordMap) {
-    if (name.includes(key)) return keywordMap[key];
-  }
-  return ''; // 찾지 못한 경우 빈 문자열
 }
