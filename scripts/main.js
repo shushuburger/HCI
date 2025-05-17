@@ -1,3 +1,5 @@
+// main.js
+
 document.addEventListener('DOMContentLoaded', () => {
   const calendarBtn = document.getElementById('calendarBtn');
   if (calendarBtn) {
@@ -22,13 +24,11 @@ document.addEventListener('DOMContentLoaded', () => {
     .then(res => res.json())
     .then(codeMap => {
       codeToFullnameMap = codeMap;
-
       return fetch('./assets/data/group_avg.json');
     })
     .then(res => res.json())
     .then(avgMap => {
       groupAvgMap = avgMap;
-
       return fetch('./assets/geo/korea-sigungu.json');
     })
     .then(res => res.json())
@@ -80,6 +80,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 O₃: ${o3 ?? '-'}
               `)
               .openOn(map);
+
+            updateGraphSection(pm10, pm25, o3);
           });
         }
       }).addTo(map);
@@ -110,6 +112,14 @@ document.addEventListener('DOMContentLoaded', () => {
             );
             const full = codeToFullnameMap[code]?.full || fullName;
             locationText.textContent = full;
+
+            const avg = groupAvgMap[full];
+            if (avg) {
+              const pm10 = avg?.PM10?.toFixed(1);
+              const pm25 = avg?.['PM2.5']?.toFixed(1);
+              const o3 = avg?.오존?.toFixed(3);
+              updateGraphSection(pm10, pm25, o3);
+            }
           }
         })
         .catch(err => {
@@ -126,14 +136,14 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function getColorByPm10(pm10) {
-  if (pm10 === null || pm10 === undefined || isNaN(pm10)) return '#7F7F7F'; // 회색
-  if (pm10 <= 15) return '#4285F4';   // 짙은 파랑
-  if (pm10 <= 30) return '#9CD5F9';   // 연한 파랑
-  if (pm10 <= 40) return '#B5E61D';   // 연두
-  if (pm10 <= 50) return '#22B14C';   // 초록
-  if (pm10 <= 75) return '#FFD400';   // 노랑
-  if (pm10 <= 100) return '#FF7F27';  // 주황
-  return '#F52020';                   // 빨강
+  if (pm10 === null || pm10 === undefined || isNaN(pm10)) return '#7F7F7F';
+  if (pm10 <= 15) return '#4285F4';
+  if (pm10 <= 30) return '#9CD5F9';
+  if (pm10 <= 40) return '#B5E61D';
+  if (pm10 <= 50) return '#22B14C';
+  if (pm10 <= 75) return '#FFD400';
+  if (pm10 <= 100) return '#FF7F27';
+  return '#F52020';
 }
 
 function getFeatureCenter(geometry) {
@@ -160,4 +170,77 @@ function formatTime(date) {
   const period = hour < 12 ? '오전' : '오후';
   const hour12 = hour % 12 === 0 ? 12 : hour % 12;
   return `${year}.${month}.${day} ${period} ${hour12}:${minute} (${hour}시)`;
+}
+
+function updateGraphSection(pm10, pm25, o3) {
+  const pm10Value = parseFloat(pm10);
+  const pm25Value = parseFloat(pm25);
+  const o3Value = parseFloat(o3);
+
+  const pm10El = document.getElementById('pm10');
+  const pm25El = document.getElementById('pm25');
+  const o3El = document.getElementById('o3');
+
+  pm10El.textContent = getGradeText('PM10', pm10Value);
+  pm25El.textContent = getGradeText('PM2.5', pm25Value);
+  o3El.textContent = getGradeText('O3', o3Value);
+
+  updateColorClass(pm10El, 'PM10', pm10Value);
+  updateColorClass(pm25El, 'PM2.5', pm25Value);
+  updateColorClass(o3El, 'O3', o3Value);
+}
+
+function getGradeText(type, value) {
+  if (value === null || isNaN(value)) return '정보 없음';
+
+  if (type === 'PM10') {
+    if (value <= 15) return `매우 좋음 (${value})`;
+    if (value <= 30) return `좋음 (${value})`;
+    if (value <= 40) return `양호 (${value})`;
+    if (value <= 50) return `보통 (${value})`;
+    if (value <= 75) return `나쁨 (${value})`;
+    if (value <= 100) return `매우 나쁨 (${value})`;
+    return `최악 (${value})`;
+  }
+
+  if (type === 'PM2.5') {
+    if (value <= 15) return `좋음 (${value})`;
+    if (value <= 35) return `보통 (${value})`;
+    if (value <= 75) return `나쁨 (${value})`;
+    return `매우 나쁨 (${value})`;
+  }
+
+  if (type === 'O3') {
+    if (value <= 0.03) return `좋음 (${value})`;
+    if (value <= 0.09) return `보통 (${value})`;
+    if (value <= 0.15) return `나쁨 (${value})`;
+    return `매우 나쁨 (${value})`;
+  }
+
+  return `${value}`;
+}
+
+function updateColorClass(element, type, value) {
+  element.className = '';
+  if (value === null || isNaN(value)) return;
+
+  if (type === 'PM10') {
+    if (value <= 15) element.classList.add('text-primary');
+    else if (value <= 30) element.classList.add('text-info');
+    else if (value <= 50) element.classList.add('text-success');
+    else if (value <= 75) element.classList.add('text-warning');
+    else element.classList.add('text-danger');
+  }
+
+  if (type === 'PM2.5') {
+    if (value <= 15) element.classList.add('text-success');
+    else if (value <= 35) element.classList.add('text-warning');
+    else element.classList.add('text-danger');
+  }
+
+  if (type === 'O3') {
+    if (value <= 0.03) element.classList.add('text-success');
+    else if (value <= 0.09) element.classList.add('text-warning');
+    else element.classList.add('text-danger');
+  }
 }
