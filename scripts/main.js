@@ -286,7 +286,38 @@ function updateGraphSection(pm10, pm25, o3) {
           borderRadius: 5
         }]
       },
-      options: { plugins: { legend: { display: false }, tooltip: { enabled: false } } }
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false },
+          tooltip: { enabled: false }
+        },
+        layout: {
+          padding: {
+            bottom: 50 // 👈 아래에 여백 줘야 글씨가 보입니다!
+          }
+        }
+      },
+      plugins: [{
+        id: 'customLabels',
+        beforeDraw: (chart) => {
+          const { ctx, chartArea } = chart;
+          if (!chartArea) return; // 안전장치
+          const { left, right, bottom } = chartArea;
+
+          ctx.save();
+          ctx.font = 'bold 20px Arial';
+          ctx.fillStyle = '#555';
+          ctx.textAlign = 'center';
+
+          // 왼쪽 (0)
+          ctx.fillText('0', left + 10, bottom + 10);
+          // 오른쪽 (150)
+          ctx.fillText('150', right - 18, bottom + 10);
+
+          ctx.restore();
+        }
+      }]
     });
   }
 
@@ -304,7 +335,38 @@ function updateGraphSection(pm10, pm25, o3) {
           borderRadius: 5
         }]
       },
-      options: { plugins: { legend: { display: false }, tooltip: { enabled: false } } }
+options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false },
+          tooltip: { enabled: false }
+        },
+        layout: {
+          padding: {
+            bottom: 50 // 👈 아래에 여백 줘야 글씨가 보입니다!
+          }
+        }
+      },
+      plugins: [{
+        id: 'customLabels',
+        beforeDraw: (chart) => {
+          const { ctx, chartArea } = chart;
+          if (!chartArea) return; // 안전장치
+          const { left, right, bottom } = chartArea;
+
+          ctx.save();
+          ctx.font = 'bold 20px Arial';
+          ctx.fillStyle = '#555';
+          ctx.textAlign = 'center';
+
+          // 왼쪽 (0)
+          ctx.fillText('0', left + 10, bottom + 10);
+          // 오른쪽 (150)
+          ctx.fillText('75', right - 15, bottom + 10);
+
+          ctx.restore();
+        }
+      }]
     });
   }
 
@@ -322,7 +384,38 @@ function updateGraphSection(pm10, pm25, o3) {
           borderRadius: 5
         }]
       },
-      options: { plugins: { legend: { display: false }, tooltip: { enabled: false } } }
+options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false },
+          tooltip: { enabled: false }
+        },
+        layout: {
+          padding: {
+            bottom: 50 // 👈 아래에 여백 줘야 글씨가 보입니다!
+          }
+        }
+      },
+      plugins: [{
+        id: 'customLabels',
+        beforeDraw: (chart) => {
+          const { ctx, chartArea } = chart;
+          if (!chartArea) return; // 안전장치
+          const { left, right, bottom } = chartArea;
+
+          ctx.save();
+          ctx.font = 'bold 20px Arial';
+          ctx.fillStyle = '#555';
+          ctx.textAlign = 'center';
+
+          // 왼쪽 (0)
+          ctx.fillText('0', left + 10, bottom + 10);
+          // 오른쪽 (150)
+          ctx.fillText('0.15', right - 20, bottom + 10);
+
+          ctx.restore();
+        }
+      }]
     });
   }
 }
