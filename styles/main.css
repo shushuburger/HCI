@@ -67,21 +67,21 @@ body {
 
 /* 지도 영역 */
 #map {
-  width: 100%;
-  height: 100vh;
-  background-color: white;
+    width: 100%;
+    height: 100vh;
+    background-color: white;
 }
 
 .leaflet-tooltip.region-tooltip {
-  background: transparent;
-  border: none;
-  box-shadow: none;
-  color: #111;
-  font-weight: bold;
-  font-size: 12px;
-  text-align: center;
-  padding: 2px 4px;
-  pointer-events: none;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    color: #111;
+    font-weight: bold;
+    font-size: 12px;
+    text-align: center;
+    padding: 2px 4px;
+    pointer-events: none;
 }
 
 .map-section {
@@ -94,7 +94,7 @@ body {
     max-width: 600px;
 }
 
-#gauge {
+#ruleGauge {
     width: 100%;
     max-width: 600px;
 }
@@ -130,6 +130,34 @@ body {
 }
 
 /* 그래프 영역 */
+.text-grade1 {
+      color: #4285F4 !important;
+}
+
+.text-grade2 {
+      color: #9CD5F9 !important;
+}
+
+.text-grade3 {
+      color: #B5E61D !important;
+}
+
+.text-grade4 {
+      color: #22B14C !important;
+}
+
+.text-grade5 {
+  color: #FFD400 !important;
+}
+
+.text-grade6 {
+      color: #FF7F27 !important;
+}
+
+.text-grade7 {
+  color: #F52020 !important;
+}
+
 .graph-section {
     display: flex;
     justify-content: space-between;
@@ -144,6 +172,16 @@ body {
     padding: 1rem;
     text-align: center;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.gauge {
+    min-width: 220px;
+    min-height: 220px;
+    /* 예시 값, 상황에 따라 조절 */
+}
+
+.graph-section .gauge h5 {
+    white-space: nowrap;
 }
 
 /* 대처 방안 */

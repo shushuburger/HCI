@@ -5,7 +5,6 @@ let pm10Chart;
 let pm25Chart;
 let o3Chart;
 
-// (이전 코드와 동일)
 document.addEventListener('DOMContentLoaded', () => {
   const calendarBtn = document.getElementById('calendarBtn');
   if (calendarBtn) {
@@ -141,6 +140,39 @@ document.addEventListener('DOMContentLoaded', () => {
   );
 });
 
+function getColorByPm10(pm10) {
+  if (pm10 === null || pm10 === undefined || isNaN(pm10)) return '#7F7F7F';
+  if (pm10 <= 15) return '#4285F4';
+  if (pm10 <= 30) return '#9CD5F9';
+  if (pm10 <= 55) return '#B5E61D';
+  if (pm10 <= 80) return '#22B14C';
+  if (pm10 <= 115) return '#FFD400';
+  if (pm10 <= 150) return '#FF7F27';
+  return '#F52020';
+}
+
+function getColorByPm25(pm25) {
+  if (pm25 === null || pm25 === undefined || isNaN(pm25)) return '#7F7F7F';
+  if (pm25 <= 7.5) return '#4285F4';
+  if (pm25 <= 15) return '#9CD5F9';
+  if (pm25 <= 25) return '#B5E61D';
+  if (pm25 <= 35) return '#22B14C';
+  if (pm25 <= 55) return '#FFD400';
+  if (pm25 <= 75) return '#FF7F27';
+  return '#F52020';
+}
+
+function getColorByO3(o3) {
+  if (o3 === null || o3 === undefined || isNaN(o3)) return '#7F7F7F';
+  if (o3 <= 0.015) return '#4285F4';
+  if (o3 <= 0.03) return '#9CD5F9';
+  if (o3 <= 0.06) return '#B5E61D';
+  if (o3 <= 0.09) return '#22B14C';
+  if (o3 <= 0.12) return '#FFD400';
+  if (o3 <= 0.15) return '#FF7F27';
+  return '#F52020';
+}
+
 function getFeatureCenter(geometry) {
   let coords = [];
   if (geometry.type === 'Polygon') coords = geometry.coordinates[0];
@@ -167,17 +199,6 @@ function formatTime(date) {
   return `${year}.${month}.${day} ${period} ${hour12}:${minute} (${hour}시)`;
 }
 
-function getColorByPm10(pm10) {
-  if (pm10 === null || pm10 === undefined || isNaN(pm10)) return '#7F7F7F';
-  if (pm10 <= 15) return '#4285F4';
-  if (pm10 <= 30) return '#9CD5F9';
-  if (pm10 <= 40) return '#B5E61D';
-  if (pm10 <= 50) return '#22B14C';
-  if (pm10 <= 75) return '#FFD400';
-  if (pm10 <= 100) return '#FF7F27';
-  return '#F52020';
-}
-
 function updateGraphSection(pm10, pm25, o3) {
   const pm10Value = parseFloat(pm10);
   const pm25Value = parseFloat(pm25);
@@ -195,14 +216,18 @@ function updateGraphSection(pm10, pm25, o3) {
   updateColorClass(pm25El, 'PM2.5', pm25Value);
   updateColorClass(o3El, 'O3', o3Value);
 
-  // gauge 그래프 업데이트
   if (pm10Chart) pm10Chart.destroy();
-  const ctx = document.getElementById('pm10Gauge');
-  if (ctx) {
-    pm10Chart = new Chart(ctx, {
+  if (pm25Chart) pm25Chart.destroy();
+  if (o3Chart) o3Chart.destroy();
+
+  const ctx10 = document.getElementById('pm10Chart');
+  const ctx25 = document.getElementById('pm25Chart');
+  const ctxO3 = document.getElementById('o3Chart');
+
+  if (ctx10) {
+    pm10Chart = new Chart(ctx10, {
       type: 'doughnut',
       data: {
-        labels: ['PM10'],
         datasets: [{
           data: [pm10Value, 150 - pm10Value],
           backgroundColor: [getColorByPm10(pm10Value), '#eee'],
@@ -212,13 +237,41 @@ function updateGraphSection(pm10, pm25, o3) {
           rotation: 270,
         }]
       },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: { display: false },
-          tooltip: { enabled: false }
-        }
-      }
+      options: { plugins: { legend: { display: false }, tooltip: { enabled: false } } }
+    });
+  }
+
+  if (ctx25) {
+    pm25Chart = new Chart(ctx25, {
+      type: 'doughnut',
+      data: {
+        datasets: [{
+          data: [pm25Value, 75 - pm25Value],
+          backgroundColor: [getColorByPm25(pm25Value), '#eee'],
+          borderWidth: 0,
+          cutout: '70%',
+          circumference: 180,
+          rotation: 270,
+        }]
+      },
+      options: { plugins: { legend: { display: false }, tooltip: { enabled: false } } }
+    });
+  }
+
+  if (ctxO3) {
+    o3Chart = new Chart(ctxO3, {
+      type: 'doughnut',
+      data: {
+        datasets: [{
+          data: [o3Value, 0.15 - o3Value],
+          backgroundColor: [getColorByO3(o3Value), '#eee'],
+          borderWidth: 0,
+          cutout: '70%',
+          circumference: 180,
+          rotation: 270,
+        }]
+      },
+      options: { plugins: { legend: { display: false }, tooltip: { enabled: false } } }
     });
   }
 }
@@ -229,25 +282,31 @@ function getGradeText(type, value) {
   if (type === 'PM10') {
     if (value <= 15) return `매우 좋음 (${value})`;
     if (value <= 30) return `좋음 (${value})`;
-    if (value <= 40) return `양호 (${value})`;
-    if (value <= 50) return `보통 (${value})`;
-    if (value <= 75) return `나쁨 (${value})`;
-    if (value <= 100) return `매우 나쁨 (${value})`;
+    if (value <= 55) return `양호 (${value})`;
+    if (value <= 80) return `보통 (${value})`;
+    if (value <= 115) return `나쁨 (${value})`;
+    if (value <= 150) return `매우 나쁨 (${value})`;
     return `최악 (${value})`;
   }
 
   if (type === 'PM2.5') {
+    if (value <= 7.5) return `매우 좋음 (${value})`;
     if (value <= 15) return `좋음 (${value})`;
+    if (value <= 25) return `양호 (${value})`;
     if (value <= 35) return `보통 (${value})`;
-    if (value <= 75) return `나쁨 (${value})`;
-    return `매우 나쁨 (${value})`;
+    if (value <= 55) return `나쁨 (${value})`;
+    if (value <= 75) return `매우 나쁨 (${value})`;
+    return `최악 (${value})`;
   }
 
   if (type === 'O3') {
+    if (value <= 0.015) return `매우 좋음 (${value})`;
     if (value <= 0.03) return `좋음 (${value})`;
+    if (value <= 0.06) return `양호 (${value})`;
     if (value <= 0.09) return `보통 (${value})`;
-    if (value <= 0.15) return `나쁨 (${value})`;
-    return `매우 나쁨 (${value})`;
+    if (value <= 0.12) return `나쁨 (${value})`;
+    if (value <= 0.15) return `매우 나쁨 (${value})`;
+    return `최악 (${value})`;
   }
 
   return `${value}`;
@@ -258,22 +317,32 @@ function updateColorClass(element, type, value) {
   if (value === null || isNaN(value)) return;
 
   if (type === 'PM10') {
-    if (value <= 15) element.classList.add('text-primary');
-    else if (value <= 30) element.classList.add('text-info');
-    else if (value <= 50) element.classList.add('text-success');
-    else if (value <= 75) element.classList.add('text-warning');
-    else element.classList.add('text-danger');
+    if (value <= 15) element.classList.add('text-grade1');
+    else if (value <= 30) element.classList.add('text-grade2');
+    else if (value <= 55) element.classList.add('text-grade3');
+    else if (value <= 80) element.classList.add('text-grade4');
+    else if (value <= 115) element.classList.add('text-grade5');
+    else if (value <= 150) element.classList.add('text-grade6');
+    else element.classList.add('text-grade7');
   }
 
   if (type === 'PM2.5') {
-    if (value <= 15) element.classList.add('text-success');
-    else if (value <= 35) element.classList.add('text-warning');
-    else element.classList.add('text-danger');
+    if (value <= 7.5) element.classList.add('text-grade1');
+    else if (value <= 15) element.classList.add('text-grade2');
+    else if (value <= 25) element.classList.add('text-grade3');
+    else if (value <= 35) element.classList.add('text-grade4');
+    else if (value <= 55) element.classList.add('text-grade5');
+    else if (value <= 75) element.classList.add('text-grade6');
+    else element.classList.add('text-grade7');
   }
 
   if (type === 'O3') {
-    if (value <= 0.03) element.classList.add('text-success');
-    else if (value <= 0.09) element.classList.add('text-warning');
-    else element.classList.add('text-danger');
+    if (value <= 0.015) element.classList.add('text-grade1');
+    else if (value <= 0.03) element.classList.add('text-grade2');
+    else if (value <= 0.06) element.classList.add('text-grade3');
+    else if (value <= 0.09) element.classList.add('text-grade4');
+    else if (value <= 0.12) element.classList.add('text-grade5');
+    else if (value <= 0.15) element.classList.add('text-grade6');
+    else element.classList.add('text-grade7');
   }
 }
