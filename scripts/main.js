@@ -1,5 +1,11 @@
 // main.js
 
+// Chart.js gauge chart 초기화 변수
+let pm10Chart;
+let pm25Chart;
+let o3Chart;
+
+// (이전 코드와 동일)
 document.addEventListener('DOMContentLoaded', () => {
   const calendarBtn = document.getElementById('calendarBtn');
   if (calendarBtn) {
@@ -135,17 +141,6 @@ document.addEventListener('DOMContentLoaded', () => {
   );
 });
 
-function getColorByPm10(pm10) {
-  if (pm10 === null || pm10 === undefined || isNaN(pm10)) return '#7F7F7F';
-  if (pm10 <= 15) return '#4285F4';
-  if (pm10 <= 30) return '#9CD5F9';
-  if (pm10 <= 40) return '#B5E61D';
-  if (pm10 <= 50) return '#22B14C';
-  if (pm10 <= 75) return '#FFD400';
-  if (pm10 <= 100) return '#FF7F27';
-  return '#F52020';
-}
-
 function getFeatureCenter(geometry) {
   let coords = [];
   if (geometry.type === 'Polygon') coords = geometry.coordinates[0];
@@ -172,6 +167,17 @@ function formatTime(date) {
   return `${year}.${month}.${day} ${period} ${hour12}:${minute} (${hour}시)`;
 }
 
+function getColorByPm10(pm10) {
+  if (pm10 === null || pm10 === undefined || isNaN(pm10)) return '#7F7F7F';
+  if (pm10 <= 15) return '#4285F4';
+  if (pm10 <= 30) return '#9CD5F9';
+  if (pm10 <= 40) return '#B5E61D';
+  if (pm10 <= 50) return '#22B14C';
+  if (pm10 <= 75) return '#FFD400';
+  if (pm10 <= 100) return '#FF7F27';
+  return '#F52020';
+}
+
 function updateGraphSection(pm10, pm25, o3) {
   const pm10Value = parseFloat(pm10);
   const pm25Value = parseFloat(pm25);
@@ -188,6 +194,33 @@ function updateGraphSection(pm10, pm25, o3) {
   updateColorClass(pm10El, 'PM10', pm10Value);
   updateColorClass(pm25El, 'PM2.5', pm25Value);
   updateColorClass(o3El, 'O3', o3Value);
+
+  // gauge 그래프 업데이트
+  if (pm10Chart) pm10Chart.destroy();
+  const ctx = document.getElementById('pm10Gauge');
+  if (ctx) {
+    pm10Chart = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: ['PM10'],
+        datasets: [{
+          data: [pm10Value, 150 - pm10Value],
+          backgroundColor: [getColorByPm10(pm10Value), '#eee'],
+          borderWidth: 0,
+          cutout: '70%',
+          circumference: 180,
+          rotation: 270,
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false },
+          tooltip: { enabled: false }
+        }
+      }
+    });
+  }
 }
 
 function getGradeText(type, value) {
