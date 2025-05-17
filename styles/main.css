@@ -40,7 +40,10 @@ body {
 .location-time {
     text-align: center;
     padding: 1rem;
-    font-size: 1.1rem;
+    font-size: 22px;
+    font-weight: bold;
+    background-color: #e2e0e0de;
+    border-radius: 10px;
 }
 
 /* 미세먼지/초미세먼지 토글 */
@@ -130,32 +133,40 @@ body {
 }
 
 /* 그래프 영역 */
+#pm10,
+#pm25,
+#o3 {
+    font-size: 25px;
+    /* 또는 원하는 크기 */
+    font-weight: bold;
+}
+
 .text-grade1 {
-      color: #4285F4 !important;
+    color: #4285F4 !important;
 }
 
 .text-grade2 {
-      color: #9CD5F9 !important;
+    color: #9CD5F9 !important;
 }
 
 .text-grade3 {
-      color: #B5E61D !important;
+    color: #B5E61D !important;
 }
 
 .text-grade4 {
-      color: #22B14C !important;
+    color: #22B14C !important;
 }
 
 .text-grade5 {
-  color: #FFD400 !important;
+    color: #FFD400 !important;
 }
 
 .text-grade6 {
-      color: #FF7F27 !important;
+    color: #FF7F27 !important;
 }
 
 .text-grade7 {
-  color: #F52020 !important;
+    color: #F52020 !important;
 }
 
 .graph-section {
@@ -182,6 +193,22 @@ body {
 
 .graph-section .gauge h5 {
     white-space: nowrap;
+}
+
+.popover-box {
+  position: absolute;
+  top: 100%; /* 버튼 바로 아래 */
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-top: 6px;
+  width: 200px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 10;
+  font-size: 0.85rem;
 }
 
 /* 대처 방안 */

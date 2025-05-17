@@ -235,6 +235,7 @@ function updateGraphSection(pm10, pm25, o3) {
           cutout: '70%',
           circumference: 180,
           rotation: 270,
+          borderRadius: 5
         }]
       },
       options: { plugins: { legend: { display: false }, tooltip: { enabled: false } } }
@@ -252,6 +253,7 @@ function updateGraphSection(pm10, pm25, o3) {
           cutout: '70%',
           circumference: 180,
           rotation: 270,
+          borderRadius: 5
         }]
       },
       options: { plugins: { legend: { display: false }, tooltip: { enabled: false } } }
@@ -269,6 +271,7 @@ function updateGraphSection(pm10, pm25, o3) {
           cutout: '70%',
           circumference: 180,
           rotation: 270,
+          borderRadius: 5
         }]
       },
       options: { plugins: { legend: { display: false }, tooltip: { enabled: false } } }
@@ -346,3 +349,37 @@ function updateColorClass(element, type, value) {
     else element.classList.add('text-grade7');
   }
 }
+
+document.querySelectorAll('.infoBtn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const type = btn.dataset.type;
+    fetch('./assets/data/pollutant_info.json')
+      .then(res => res.json())
+      .then(data => {
+        const info = data[type];
+        if (info) {
+          const popoverId = `${type.toLowerCase()}-popover`;
+          let popover = document.getElementById(popoverId);
+
+          // 이미 있으면 토글
+          if (popover.style.display === 'block') {
+            popover.style.display = 'none';
+            return;
+          }
+
+          popover.textContent = info.description;
+          popover.style.display = 'block';
+        }
+      });
+  });
+});
+
+// 외부 클릭 시 닫기
+document.addEventListener('click', (e) => {
+  const isBtn = e.target.closest('.infoBtn');
+  if (!isBtn) {
+    document.querySelectorAll('.popover-box').forEach(p => {
+      p.style.display = 'none';
+    });
+  }
+});

@@ -47,29 +47,32 @@
             <!-- 우측: 그래프 + 대처방안 -->
             <div class="col-lg-6">
                 <div class="graph-section">
-                    <div class="gauge">
+                    <div class="gauge position-relative">
                         <h5>미세먼지 (PM10)</h5>
                         <canvas id="pm10Chart" width="160" height="100"></canvas>
-                        <p id="pm10" class="text-danger">나쁨 (125)</p>
-                        <button id="infoBtn" class="btn">
+                        <p id="pm10">나쁨 (125)</p>
+                        <button class="btn infoBtn" data-type="PM10">
                             <img src="./assets/icons/information.png" alt="상세정보" width="20" height="20">
                         </button>
+                        <div class="popover-box" id="pm10-popover" style="display: none;">...</div>
                     </div>
-                    <div class="gauge">
+                    <div class="gauge position-relative">
                         <h5>초미세먼지 (PM2.5)</h5>
                         <canvas id="pm25Chart" width="160" height="100"></canvas>
-                        <p id="pm25" class="text-warning">보통 (34)</p>
-                        <button id="infoBtn" class="btn">
+                        <p id="pm25">보통 (34)</p>
+                        <button class="btn infoBtn" data-type="PM2.5">
                             <img src="./assets/icons/information.png" alt="상세정보" width="20" height="20">
                         </button>
+                        <div class="popover-box" id="pm2.5-popover" style="display: none;">...</div>
                     </div>
-                    <div class="gauge">
+                    <div class="gauge position-relative">
                         <h5>오존 (O₃)</h5>
                         <canvas id="o3Chart" width="160" height="100"></canvas>
-                        <p id="o3" class="text-warning">보통 (0.054)</p>
-                        <button id="infoBtn" class="btn">
+                        <p id="o3">보통 (0.054)</p>
+                        <button class="btn infoBtn" data-type="O3">
                             <img src="./assets/icons/information.png" alt="상세정보" width="20" height="20">
                         </button>
+                        <div class="popover-box" id="o3-popover" style="display: none;">...</div>
                     </div>
                 </div>
 
@@ -107,7 +110,6 @@
             </div>
         </div>
     </div>
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="./scripts/main.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
