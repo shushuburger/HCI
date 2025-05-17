@@ -1,6 +1,34 @@
-// main.js
+const pm10Btn = document.getElementById('pm10Btn');
+const pm25Btn = document.getElementById('pm25Btn');
 
-// Chart.js gauge chart 초기화 변수
+let currentPollutant = 'PM10'; // 기본값
+let geojsonLayer;
+let map;
+let codeToFullnameMap = {};
+let groupAvgMap = {};
+
+pm10Btn.addEventListener('click', () => {
+  pm10Btn.classList.add('btn-primary');
+  pm10Btn.classList.remove('btn-light');
+  pm25Btn.classList.add('btn-light');
+  pm25Btn.classList.remove('btn-primary');
+
+  currentPollutant = 'PM10';
+  updateMapStyle();
+  updateGaugeImage();
+});
+
+pm25Btn.addEventListener('click', () => {
+  pm25Btn.classList.add('btn-primary');
+  pm25Btn.classList.remove('btn-light');
+  pm10Btn.classList.add('btn-light');
+  pm10Btn.classList.remove('btn-primary');
+
+  currentPollutant = 'PM2.5';
+  updateMapStyle();
+  updateGaugeImage();
+});
+
 let pm10Chart;
 let pm25Chart;
 let o3Chart;
@@ -13,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  const map = L.map('map', {
+  map = L.map('map', {
     zoomControl: true,
     attributionControl: false,
     preferCanvas: true
@@ -21,9 +49,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const locationText = document.getElementById('location');
   const timeText = document.getElementById('time');
-
-  let codeToFullnameMap = {};
-  let groupAvgMap = {};
 
   fetch('./assets/geo/code_to_fullname_map_combined.json')
     .then(res => res.json())
@@ -38,20 +63,8 @@ document.addEventListener('DOMContentLoaded', () => {
     })
     .then(res => res.json())
     .then(geojson => {
-      L.geoJSON(geojson, {
-        style: feature => {
-          const code = feature.properties.code.toString().padStart(5, '0');
-          const full = codeToFullnameMap[code]?.full || feature.properties.name;
-          const avg = groupAvgMap[full];
-          const pm10 = avg?.PM10;
-
-          return {
-            color: '#000',
-            weight: 1.5,
-            fillColor: getColorByPm10(pm10),
-            fillOpacity: 0.8
-          };
-        },
+      geojsonLayer = L.geoJSON(geojson, {
+        style: feature => getStyleByPollutant(feature),
         onEachFeature: (feature, layer) => {
           const code = feature.properties.code.toString().padStart(5, '0');
           const short = codeToFullnameMap[code]?.short || feature.properties.name;
@@ -67,10 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
             permanent: true,
             direction: 'center',
             className: 'region-tooltip'
-          })
-            .setContent(short)
-            .setLatLng(center)
-            .addTo(map);
+          }).setContent(short).setLatLng(center).addTo(map);
 
           layer.on('click', () => {
             locationText.textContent = full;
@@ -139,6 +149,41 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   );
 });
+
+function updateGaugeImage() {
+  const gaugeImg = document.getElementById('ruleGauge');
+  if (!gaugeImg) return;
+
+  if (currentPollutant === 'PM10') {
+    gaugeImg.src = './assets/pm10Gauge.png';
+    gaugeImg.alt = '미세먼지 수치 분류';
+  } else if (currentPollutant === 'PM2.5') {
+    gaugeImg.src = './assets/pm25Gauge.png';
+    gaugeImg.alt = '초미세먼지 수치 분류';
+  }
+}
+
+function updateMapStyle() {
+  geojsonLayer.setStyle(feature => getStyleByPollutant(feature));
+}
+
+function getStyleByPollutant(feature) {
+  const code = feature.properties.code.toString().padStart(5, '0');
+  const full = codeToFullnameMap[code]?.full || feature.properties.name;
+  const avg = groupAvgMap[full];
+  const value = avg?.[currentPollutant];
+
+  let fillColor = '#7F7F7F';
+  if (currentPollutant === 'PM10') fillColor = getColorByPm10(value);
+  else if (currentPollutant === 'PM2.5') fillColor = getColorByPm25(value);
+
+  return {
+    color: '#000',
+    weight: 1.5,
+    fillColor,
+    fillOpacity: 0.8
+  };
+}
 
 function getColorByPm10(pm10) {
   if (pm10 === null || pm10 === undefined || isNaN(pm10)) return '#7F7F7F';
@@ -319,35 +364,22 @@ function updateColorClass(element, type, value) {
   element.className = '';
   if (value === null || isNaN(value)) return;
 
-  if (type === 'PM10') {
-    if (value <= 15) element.classList.add('text-grade1');
-    else if (value <= 30) element.classList.add('text-grade2');
-    else if (value <= 55) element.classList.add('text-grade3');
-    else if (value <= 80) element.classList.add('text-grade4');
-    else if (value <= 115) element.classList.add('text-grade5');
-    else if (value <= 150) element.classList.add('text-grade6');
-    else element.classList.add('text-grade7');
-  }
+  const thresholds = {
+    'PM10': [15, 30, 55, 80, 115, 150],
+    'PM2.5': [7.5, 15, 25, 35, 55, 75],
+    'O3': [0.015, 0.03, 0.06, 0.09, 0.12, 0.15]
+  };
 
-  if (type === 'PM2.5') {
-    if (value <= 7.5) element.classList.add('text-grade1');
-    else if (value <= 15) element.classList.add('text-grade2');
-    else if (value <= 25) element.classList.add('text-grade3');
-    else if (value <= 35) element.classList.add('text-grade4');
-    else if (value <= 55) element.classList.add('text-grade5');
-    else if (value <= 75) element.classList.add('text-grade6');
-    else element.classList.add('text-grade7');
-  }
+  const grades = ['text-grade1', 'text-grade2', 'text-grade3', 'text-grade4', 'text-grade5', 'text-grade6', 'text-grade7'];
+  const limits = thresholds[type];
 
-  if (type === 'O3') {
-    if (value <= 0.015) element.classList.add('text-grade1');
-    else if (value <= 0.03) element.classList.add('text-grade2');
-    else if (value <= 0.06) element.classList.add('text-grade3');
-    else if (value <= 0.09) element.classList.add('text-grade4');
-    else if (value <= 0.12) element.classList.add('text-grade5');
-    else if (value <= 0.15) element.classList.add('text-grade6');
-    else element.classList.add('text-grade7');
+  for (let i = 0; i < limits.length; i++) {
+    if (value <= limits[i]) {
+      element.classList.add(grades[i]);
+      return;
+    }
   }
+  element.classList.add(grades[grades.length - 1]);
 }
 
 document.querySelectorAll('.infoBtn').forEach(btn => {
@@ -361,7 +393,6 @@ document.querySelectorAll('.infoBtn').forEach(btn => {
           const popoverId = `${type.toLowerCase()}-popover`;
           let popover = document.getElementById(popoverId);
 
-          // 이미 있으면 토글
           if (popover.style.display === 'block') {
             popover.style.display = 'none';
             return;
@@ -374,7 +405,6 @@ document.querySelectorAll('.infoBtn').forEach(btn => {
   });
 });
 
-// 외부 클릭 시 닫기
 document.addEventListener('click', (e) => {
   const isBtn = e.target.closest('.infoBtn');
   if (!isBtn) {
