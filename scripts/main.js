@@ -127,7 +127,7 @@ function formatTime(date) {
 }
 
 function fetchAirData(sido, gugun) {
-  const serviceKey = 'YOUR_PUBLIC_DATA_API_KEY'; // 🔁 발급받은 인증키로 교체
+  const serviceKey = 'MNUICj9LF0yMX9b9cMQiBVz62JWYaqaGxBOIATmwvQgzkfdHQjzCouGaBLIzyg6MYGQOHqefVCRf3E23XoqVGA%3D%3D'; // 🔁 발급받은 인증키로 교체
   const url = `https://apis.data.go.kr/B552584/ArpltnInforInqireSvc/getCtprvnRltmMesureDnsty?serviceKey=${serviceKey}&returnType=json&numOfRows=100&pageNo=1&sidoName=${sido}&ver=1.0`;
 
   fetch(url)
