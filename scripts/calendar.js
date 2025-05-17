@@ -1,4 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
+  const homeBtn = document.getElementById('homeBtn');
+
+  if (homeBtn) {
+    homeBtn.addEventListener('click', () => {
+      window.location.href = 'index.html';
+    });
+  }
+
   const API_KEY = 'AIzaSyCj5cR1M_IWWo2ApvMTDtkS1Wgwb7pHIeU';
   const CLIENT_ID = '262480863168-9i3c8g4i6e97432l4d708t3ttc8j24qc.apps.googleusercontent.com';
   const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest';
