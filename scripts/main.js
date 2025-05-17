@@ -16,46 +16,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const locationText = document.getElementById('location');
   const timeText = document.getElementById('time');
 
-  let codeToFullnameMap = {};
-  fetch('/HCI/assets/geo/code_to_fullname_map.json')
-    .then(res => res.json())
-    .then(json => { codeToFullnameMap = json; });
-
-  navigator.geolocation.getCurrentPosition(
-    (pos) => {
-      const lat = pos.coords.latitude;
-      const lon = pos.coords.longitude;
-
-      map.setView([lat, lon], 11);
-      L.marker([lat, lon]).addTo(map).bindPopup('📍 현재 위치').openPopup();
-      timeText.textContent = formatTime(new Date());
-
-      fetch(`https://dapi.kakao.com/v2/local/geo/coord2regioncode.json?x=${lon}&y=${lat}`, {
-        headers: {
-          Authorization: 'KakaoAK 6bc3bb7db30d6057283b9bf04a9fec97'
-        }
-      })
-        .then(res => res.json())
-        .then(data => {
-          const region = data.documents.find(doc => doc.region_type === 'B');
-          if (region) {
-            const code = region.code.substring(0, 5);
-            const fullName = codeToFullnameMap[code] || `${region.region_1depth_name} ${region.region_2depth_name}`;
-            locationText.textContent = fullName;
-            fetchAirData(region.region_1depth_name, region.region_2depth_name);
-          }
-        })
-        .catch(err => {
-          console.error('❌ Kakao 주소 변환 실패:', err);
-        });
-    },
-    (err) => {
-      console.error('❌ 위치 정보 오류:', err);
-      locationText.textContent = '위치 정보를 불러올 수 없습니다.';
-      timeText.textContent = formatTime(new Date());
-    }
-  );
-
   fetch('/HCI/assets/geo/code_to_name_map.json')
     .then(res => res.json())
     .then(codeToNameMap => {
@@ -89,11 +49,10 @@ document.addEventListener('DOMContentLoaded', () => {
                   .setContent(`📍 <strong>${name}</strong>`)
                   .openOn(map);
 
-                const fullName = codeToFullnameMap[code] || name;
-                locationText.textContent = fullName;
+                locationText.textContent = name;
                 timeText.textContent = formatTime(new Date());
 
-                const parts = fullName.split(' ');
+                const parts = name.split(' ');
                 const sido = parts[0];
                 const gugun = parts[1] || '';
                 fetchAirData(sido, gugun);
@@ -103,6 +62,40 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     })
     .catch(err => console.error('❌ JSON 매핑 로드 오류:', err));
+
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      const lat = pos.coords.latitude;
+      const lon = pos.coords.longitude;
+
+      map.setView([lat, lon], 11);
+      L.marker([lat, lon]).addTo(map).bindPopup('📍 현재 위치').openPopup();
+      timeText.textContent = formatTime(new Date());
+
+      fetch(`https://dapi.kakao.com/v2/local/geo/coord2regioncode.json?x=${lon}&y=${lat}`, {
+        headers: {
+          Authorization: 'KakaoAK 6bc3bb7db30d6057283b9bf04a9fec97'
+        }
+      })
+        .then(res => res.json())
+        .then(data => {
+          const region = data.documents.find(doc => doc.region_type === 'B');
+          if (region) {
+            const fullName = `${region.region_1depth_name} ${region.region_2depth_name}`;
+            locationText.textContent = fullName;
+            fetchAirData(region.region_1depth_name, region.region_2depth_name);
+          }
+        })
+        .catch(err => {
+          console.error('❌ Kakao 주소 변환 실패:', err);
+        });
+    },
+    (err) => {
+      console.error('❌ 위치 정보 오류:', err);
+      locationText.textContent = '위치 정보를 불러올 수 없습니다.';
+      timeText.textContent = formatTime(new Date());
+    }
+  );
 });
 
 function getFeatureCenter(geometry) {
@@ -140,7 +133,12 @@ function fetchAirData(sido, gugun) {
     .then(res => res.json())
     .then(data => {
       const list = data.response.body.items;
-      const target = list.find(item => item.cityName === gugun || item.stationName.includes(gugun));
+      const target = list.find(item =>
+        item.cityName === gugun ||
+        item.stationName.includes(gugun) ||
+        item.stationName.includes(gugun.replace('구', '').replace('시', ''))
+      );
+      console.log('📦 찾은 시도:', sido, '구군:', gugun, '→ 매칭 결과:', target);
       updateGraphSection(target);
     })
     .catch(err => console.error('❌ 대기오염 API 오류:', err));
