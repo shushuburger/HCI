@@ -126,11 +126,14 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function getColorByPm10(pm10) {
-  if (pm10 === null || pm10 === undefined || isNaN(pm10)) return '#ccc';
-  if (pm10 <= 30) return '#66c2a5';
-  if (pm10 <= 80) return '#ffd92f';
-  if (pm10 <= 150) return '#fc8d62';
-  return '#e31a1c';
+  if (pm10 === null || pm10 === undefined || isNaN(pm10)) return '#7F7F7F'; // 회색
+  if (pm10 <= 15) return '#4285F4';   // 짙은 파랑
+  if (pm10 <= 30) return '#9CD5F9';   // 연한 파랑
+  if (pm10 <= 40) return '#B5E61D';   // 연두
+  if (pm10 <= 50) return '#22B14C';   // 초록
+  if (pm10 <= 75) return '#FFD400';   // 노랑
+  if (pm10 <= 100) return '#FF7F27';  // 주황
+  return '#F52020';                   // 빨강
 }
 
 function getFeatureCenter(geometry) {
