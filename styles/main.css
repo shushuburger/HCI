@@ -73,6 +73,7 @@ body {
     border-radius: 3px;
     color: black;
     font-weight: bold;
+    background-color: white;
 }
 
 .leaflet-tooltip.region-tooltip {
