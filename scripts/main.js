@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let codeToFullnameMap = {};
   let groupAvgMap = {};
 
-  fetch('./assets/data/code_to_fullname_map_combined.json')
+  fetch('./assets/geo/code_to_fullname_map_combined.json')
     .then(res => res.json())
     .then(codeMap => {
       codeToFullnameMap = codeMap;
