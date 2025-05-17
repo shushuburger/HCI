@@ -47,6 +47,9 @@ document.addEventListener('DOMContentLoaded', () => {
     preferCanvas: true
   }).setView([36.5, 127.5], 7);
 
+  const myLocationBtn = document.getElementById('myLocationBtn');
+  myLocationBtn.addEventListener('click', moveToMyLocation);
+
   const locationText = document.getElementById('location');
   const timeText = document.getElementById('time');
 
@@ -333,8 +336,8 @@ function getGradeText(type, value) {
     if (value <= 55) return `양호 (${value})`;
     if (value <= 80) return `보통 (${value})`;
     if (value <= 115) return `나쁨 (${value})`;
-    if (value <= 150) return `매우 나쁨 (${value})`;
-    return `최악 (${value})`;
+    if (value <= 150) return `심각 (${value})`;
+    return `매우 나쁨 (${value})`;
   }
 
   if (type === 'PM2.5') {
@@ -343,8 +346,8 @@ function getGradeText(type, value) {
     if (value <= 25) return `양호 (${value})`;
     if (value <= 35) return `보통 (${value})`;
     if (value <= 55) return `나쁨 (${value})`;
-    if (value <= 75) return `매우 나쁨 (${value})`;
-    return `최악 (${value})`;
+    if (value <= 75) return `심각 (${value})`;
+    return `매우 나쁨 (${value})`;
   }
 
   if (type === 'O3') {
@@ -353,8 +356,8 @@ function getGradeText(type, value) {
     if (value <= 0.06) return `양호 (${value})`;
     if (value <= 0.09) return `보통 (${value})`;
     if (value <= 0.12) return `나쁨 (${value})`;
-    if (value <= 0.15) return `매우 나쁨 (${value})`;
-    return `최악 (${value})`;
+    if (value <= 0.15) return `심각 (${value})`;
+    return `매우 나쁨 (${value})`;
   }
 
   return `${value}`;
@@ -413,3 +416,65 @@ document.addEventListener('click', (e) => {
     });
   }
 });
+
+function moveToMyLocation() {
+  const locationText = document.getElementById('location');
+  const timeText = document.getElementById('time');
+
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      const lat = pos.coords.latitude;
+      const lon = pos.coords.longitude;
+
+      map.setView([lat, lon], 11);
+      L.marker([lat, lon]).addTo(map).bindPopup('📍 현재 위치').openPopup();
+      timeText.textContent = formatTime(new Date());
+
+      fetch(`https://dapi.kakao.com/v2/local/geo/coord2regioncode.json?x=${lon}&y=${lat}`, {
+        headers: {
+          Authorization: 'KakaoAK 6bc3bb7db30d6057283b9bf04a9fec97'
+        }
+      })
+        .then(res => res.json())
+        .then(data => {
+          const region = data.documents.find(doc => doc.region_type === 'B');
+          if (region) {
+            const fullName = `${region.region_1depth_name} ${region.region_2depth_name}`;
+            const code = Object.keys(codeToFullnameMap).find(
+              key => codeToFullnameMap[key].full === fullName
+            );
+            const full = codeToFullnameMap[code]?.full || fullName;
+            locationText.textContent = full;
+
+            const avg = groupAvgMap[full];
+            if (avg) {
+              const pm10 = avg?.PM10?.toFixed(1);
+              const pm25 = avg?.['PM2.5']?.toFixed(1);
+              const o3 = avg?.오존?.toFixed(3);
+              updateGraphSection(pm10, pm25, o3);
+
+              const center = map.getCenter();
+              L.popup()
+                .setLatLng(center)
+                .setContent(`
+                  <strong>${full}</strong><br>
+                  PM10: ${pm10 ?? '-'}<br>
+                  PM2.5: ${pm25 ?? '-'}<br>
+                  O₃: ${o3 ?? '-'}
+                `)
+                .openOn(map);
+            }
+          }
+        })
+        .catch(err => {
+          console.error('❌ Kakao 주소 변환 실패:', err);
+          locationText.textContent = '위치 정보를 불러올 수 없습니다.';
+        });
+    },
+    (err) => {
+      console.error('❌ 위치 정보 오류:', err);
+      locationText.textContent = '위치 정보를 불러올 수 없습니다.';
+      timeText.textContent = formatTime(new Date());
+    }
+  );
+}
