@@ -712,7 +712,7 @@ function showAlertBox(htmlContent) {
   const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
 
   box.style.top = `${rect.bottom + scrollTop + 6}px`;
-  box.style.left = `${rect.right + scrollLeft - 30}px`;
+  box.style.left = `${rect.right + scrollLeft - 70}px`;
 
   box.innerHTML = htmlContent;
   box.style.display = 'block';
