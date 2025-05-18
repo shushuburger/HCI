@@ -784,6 +784,7 @@ function updateSolutionGuide() {
       if (match) {
         const iconMap = [
           { keyword: /환기/, icon: 'indoor.png', alt: '실내 아이콘' },
+          { keyword: /야외/, icon: 'outdoor.png', alt: '실외 아이콘' },
           { keyword: /외출/, icon: 'home.png', alt: '외출 자제 아이콘' },
           { keyword: /마스크/, icon: 'mask.png', alt: '마스크 아이콘' },
           { keyword: /공기청정기/, icon: 'refresh.png', alt: '공기청정기 아이콘' },
