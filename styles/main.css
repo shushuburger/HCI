@@ -180,7 +180,7 @@ body {
 }
 
 .graph-section .gauge .infoBtn {
-  margin-top: 0.2rem; /* 버튼 위 여백 최소화 */
+  margin: 0.2rem; /* 버튼 위 여백 최소화 */
 }
 
 .graph-section {
@@ -188,7 +188,6 @@ body {
     justify-content: space-between;
     padding: 1rem;
     gap: 1rem;
-    height: 300px;
 }
 
 .graph-section .gauge {
