@@ -754,7 +754,7 @@ function updateSolutionGuide() {
 
   const healthMap = {
     healthy: '건강함',
-    asthma: '천식/호흡기질환',
+    asthma: '천식/호흡기 질환',
     allergy: '알레르기/비염'
   };
 
