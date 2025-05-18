@@ -638,12 +638,15 @@ function showAlertBox(htmlContent) {
     box = document.createElement('div');
     box.id = 'calendar-alert-box';
     box.className = 'popover-box';
-    box.style.top = '100%';
-    box.style.left = '50%';
-    box.style.transform = 'translateX(-50%)';
-    box.style.marginTop = '10px';
+    box.style.position = 'absolute';
+    box.style.zIndex = '9999';
+    box.style.top = `${alertBtn.offsetTop + alertBtn.offsetHeight + 6}px`;
+    box.style.left = `${alertBtn.offsetLeft}px`;
+    box.style.marginTop = '0px';
     box.style.textAlign = 'left';
     box.style.width = '250px';
+    box.style.transform = 'translateX(-50%)';
+    alertBtn.parentNode.style.position = 'relative';
     alertBtn.parentNode.appendChild(box);
   }
   box.innerHTML = htmlContent;
