@@ -53,19 +53,3 @@ body {
     margin-left: 50px;
     width: 300px;
 }
-
-.popover-box {
-  position: absolute;
-  top: 100%; /* 버튼 바로 아래 */
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #fff;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 10px 14px;
-  margin-top: 6px;
-  width: 200px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  z-index: 10;
-  font-size: 0.85rem;
-}
