@@ -646,7 +646,7 @@ function showAlertBox(htmlContent) {
     box.style.textAlign = 'left';
     box.style.marginTop = '6px';
     box.style.top = '100%'; // 버튼 아래
-    box.style.right = '0';  // 오른쪽 정렬
+    box.style.right = '30px';  // 오른쪽 정렬
 
     container.style.position = 'relative'; // 기준 위치 지정
     container.appendChild(box);
