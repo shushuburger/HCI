@@ -172,6 +172,7 @@ body {
 
 .graph-section .gauge canvas {
   margin-bottom: 0.25rem; /* 그래프 아래 공간 줄이기 */
+  padding: 0;
 }
 
 .graph-section .gauge p {
@@ -181,6 +182,7 @@ body {
 
 .graph-section .gauge .infoBtn {
   margin: 0.2rem; /* 버튼 위 여백 최소화 */
+  padding: 0;
 }
 
 .graph-section {
