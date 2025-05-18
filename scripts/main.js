@@ -573,8 +573,6 @@ function moveToMyLocation() {
 }
 
 // 📍 index.html과 연결된 main.js 파일 내부에 아래 코드 추가
-// 포항에서의 컨테이너 단위에서 Google 캐링더 일정을 검색하고 PM10 정보를 포함해 보여줍니다.
-
 const alertBtn = document.getElementById('alertBtn');
 
 if (alertBtn) {
@@ -680,7 +678,7 @@ if (alertBtn) {
           return `${time}: ${summary}<br>${location}<br>${pm10Text}`;
         }));
 
-        showAlertBox('<strong>📅 오늘의 일정</strong><br>' + lines.join('<br><br>'));
+        showAlertBox('<strong>📅 오늘의 일정</strong><br>' + lines.join('<br><br>') + '<br><br><em>지도에서 해당 지역을 클릭한 다음 본인에게 맞는 대처방안을 알아보세요</em>');
       } catch (err) {
         console.error('⛔ 일정 조회 실패:', err);
         showAlertBox('일정을 불러오는 데 실패했습니다.');
