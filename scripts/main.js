@@ -100,9 +100,12 @@ document.addEventListener('DOMContentLoaded', () => {
               .openOn(map);
 
             updateGraphSection(pm10, pm25, o3);
+            window.updateSolutionGuide(); // ✅ 이 줄 추가
           });
         }
       }).addTo(map);
+
+      updateSolutionGuide();
     })
     .catch(err => console.error('❌ JSON 로딩 오류:', err));
 
@@ -794,6 +797,3 @@ function updateSolutionGuide() {
 ageSelect.addEventListener('change', updateSolutionGuide);
 healthSelect.addEventListener('change', updateSolutionGuide);
 activitySelect.addEventListener('change', updateSolutionGuide);
-
-// 페이지 초기 로드시 1회 실행
-updateSolutionGuide();
