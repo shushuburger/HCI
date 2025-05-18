@@ -577,7 +577,7 @@ function moveToMyLocation() {
 const alertBtn = document.getElementById('alertBtn');
 
 if (alertBtn) {
-  alertBtn.addEventListener('click', () => {
+  alertBtn.addEventListener('click', async () => {
     const accessToken = localStorage.getItem('access_token');
     if (!accessToken) {
       showAlertBox('⚠️ Google 계정에 먼저 로그인해주세요.');
@@ -589,11 +589,13 @@ if (alertBtn) {
       return;
     }
 
-    gapi.load('client', () => {
-      gapi.client.init({
-        apiKey: 'AIzaSyCj5cR1M_IWWo2ApvMTDtkS1Wgwb7pHIeU',
-        discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest']
-      }).then(() => {
+    gapi.load('client', async () => {
+      try {
+        await gapi.client.init({
+          apiKey: 'AIzaSyCj5cR1M_IWWo2ApvMTDtkS1Wgwb7pHIeU',
+          discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest']
+        });
+
         gapi.client.setToken({ access_token: accessToken });
 
         const startOfDay = new Date();
@@ -601,7 +603,7 @@ if (alertBtn) {
         const endOfDay = new Date();
         endOfDay.setHours(23, 59, 59, 999);
 
-        return gapi.client.calendar.events.list({
+        const res = await gapi.client.calendar.events.list({
           calendarId: 'primary',
           timeMin: startOfDay.toISOString(),
           timeMax: endOfDay.toISOString(),
@@ -609,28 +611,74 @@ if (alertBtn) {
           singleEvents: true,
           orderBy: 'startTime'
         });
-      }).then(res => {
+
         const events = res.result.items;
         if (!events || events.length === 0) {
           showAlertBox('📅 오늘 등록된 일정이 없습니다.');
           return;
         }
 
-        const lines = events.map(e => {
+        const lines = await Promise.all(events.map(async e => {
           const start = e.start?.dateTime || e.start?.date;
           const date = new Date(start);
           const time = date.toTimeString().substring(0, 5);
-          return `${time}: ${e.summary || '제목 없음'} (${e.location || '장소 미정'})`;
-        });
+          const summary = e.summary || '제목 없음';
+          const location = e.location || '장소 미정';
+
+          let pm10Text = '';
+
+          if (location !== '장소 미정') {
+            try {
+              const kakaoSearchRes = await fetch(`https://dapi.kakao.com/v2/local/search/keyword.json?query=${encodeURIComponent(location)}`, {
+                headers: {
+                  Authorization: 'KakaoAK 6bc3bb7db30d6057283b9bf04a9fec97'
+                }
+              });
+
+              const kakaoSearch = await kakaoSearchRes.json();
+              const coord = kakaoSearch.documents[0];
+              if (coord) {
+                const x = coord.x;
+                const y = coord.y;
+
+                const regionRes = await fetch(`https://dapi.kakao.com/v2/local/geo/coord2regioncode.json?x=${x}&y=${y}`, {
+                  headers: {
+                    Authorization: 'KakaoAK 6bc3bb7db30d6057283b9bf04a9fec97'
+                  }
+                });
+
+                const regionData = await regionRes.json();
+                const region = regionData.documents.find(doc => doc.region_type === 'B');
+
+                if (region) {
+                  const regionName = `${region.region_1depth_name} ${region.region_2depth_name}`;
+                  const fullRegionName = Object.values(codeToFullnameMap).find(obj => obj.full === regionName)?.full;
+
+                  if (fullRegionName) {
+                    const pm10 = groupAvgMap[fullRegionName]?.PM10;
+                    if (pm10 !== undefined) {
+                      pm10Text = ` - PM10: ${pm10.toFixed(1)}`;
+                    }
+                  }
+                }
+              }
+            } catch (err) {
+              console.warn(`❗ 위치 "${location}" 미세먼지 정보 조회 실패`, err);
+            }
+          }
+
+          return `${time}: ${summary} (${location})${pm10Text}`;
+        }));
 
         showAlertBox('<strong>📅 오늘의 일정</strong><br>' + lines.join('<br>'));
-      }).catch(err => {
-        console.error('⛔ 알림 불러오기 오류:', err);
+      } catch (err) {
+        console.error('⛔ 일정 조회 실패:', err);
         showAlertBox('일정을 불러오는 데 실패했습니다.');
-      });
+      }
     });
   });
 }
+
 
 function showAlertBox(htmlContent) {
   console.log('제발!!!!');
