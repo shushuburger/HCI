@@ -782,8 +782,28 @@ function updateSolutionGuide() {
       );
 
       if (match) {
-        const lines = match.대처방안.split('\n');
-        recommendationsBox.innerHTML = lines.map(line => `<p>💡 ${line}</p>`).join('');
+        const iconMap = [
+          { keyword: /환기/, icon: 'indoor.png', alt: '실내 아이콘' },
+          { keyword: /외출.*(자제|삼가)/, icon: 'home.png', alt: '외출 자제 아이콘' },
+          { keyword: /마스크/, icon: 'mask.png', alt: '마스크 아이콘' },
+          { keyword: /공기청정기/, icon: 'refresh.png', alt: '공기청정기 아이콘' },
+          { keyword: /(손 씻기|세안)/, icon: 'wash.png', alt: '손씻기 아이콘' },
+          { keyword: /수분.*섭취/, icon: 'water.png', alt: '물 아이콘' },
+          { keyword: /(병원|증상)/, icon: 'hospital.png', alt: '병원 아이콘' },
+          { keyword: /(보호 장비|고글)/, icon: 'protect.png', alt: '보호장비 아이콘' },
+          { keyword: /코 세척/, icon: 'nose.png', alt: '코세척 아이콘' },
+          { keyword: /(산책|운동)/, icon: 'walk.png', alt: '산책 아이콘' },
+        ];
+
+        const lines = match.대처방안.split('\\n');
+        recommendationsBox.innerHTML = lines.map(line => {
+          const icon = iconMap.find(i => i.keyword.test(line));
+          if (icon) {
+            return `<p><img src="./assets/icons/${icon.icon}" alt="${icon.alt}" width="20" height="20">${line}</p>`;
+          } else {
+            return `<p>${line}</p>`;
+          }
+        }).join('');
       } else {
         recommendationsBox.innerHTML = '<p>❗ 해당 조건에 맞는 대처방안을 찾을 수 없습니다.</p>';
       }
