@@ -784,11 +784,11 @@ function updateSolutionGuide() {
       if (match) {
         const iconMap = [
           { keyword: /환기/, icon: 'indoor.png', alt: '실내 아이콘' },
-          { keyword: /외출.*(자제|삼가)/, icon: 'home.png', alt: '외출 자제 아이콘' },
+          { keyword: /외출/, icon: 'home.png', alt: '외출 자제 아이콘' },
           { keyword: /마스크/, icon: 'mask.png', alt: '마스크 아이콘' },
           { keyword: /공기청정기/, icon: 'refresh.png', alt: '공기청정기 아이콘' },
           { keyword: /(손 씻기|세안)/, icon: 'wash.png', alt: '손씻기 아이콘' },
-          { keyword: /수분.*섭취/, icon: 'water.png', alt: '물 아이콘' },
+          { keyword: /(수분|섭취)/, icon: 'water.png', alt: '물 아이콘' },
           { keyword: /(병원|증상)/, icon: 'hospital.png', alt: '병원 아이콘' },
           { keyword: /(보호 장비|고글)/, icon: 'protect.png', alt: '보호장비 아이콘' },
           { keyword: /코 세척/, icon: 'nose.png', alt: '코세척 아이콘' },
