@@ -633,8 +633,9 @@ if (alertBtn) {
 }
 
 function showAlertBox(htmlContent) {
+  console.log('이거야!!!!');
+  const anchor = document.getElementById('calendarBtn'); // 기준 요소를 calendarBtn으로 변경
   let box = document.getElementById('calendar-alert-box');
-  const container = alertBtn.parentNode; // .ms-auto
 
   if (!box) {
     box = document.createElement('div');
@@ -645,19 +646,25 @@ function showAlertBox(htmlContent) {
     box.style.width = '250px';
     box.style.textAlign = 'left';
     box.style.marginTop = '6px';
-    box.style.top = '100%'; // 버튼 아래
-    box.style.right = '30px';  // 오른쪽 정렬
 
-    container.style.position = 'relative'; // 기준 위치 지정
-    container.appendChild(box);
+    document.body.appendChild(box);
   }
+
+  // 위치 계산
+  const rect = anchor.getBoundingClientRect();
+  const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+  const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+
+  box.style.top = `${rect.bottom + scrollTop + 6}px`;  // 아래쪽 여백 포함
+  box.style.left = `${rect.left + scrollLeft + rect.width / 2}px`; // 가운데 정렬
+  box.style.transform = 'translateX(-50%)'; // 가운데 정렬 보정
 
   box.innerHTML = htmlContent;
   box.style.display = 'block';
 
   // 외부 클릭 시 닫기
   document.addEventListener('click', function handler(e) {
-    if (!alertBtn.contains(e.target) && !box.contains(e.target)) {
+    if (!anchor.contains(e.target) && !box.contains(e.target)) {
       box.style.display = 'none';
       document.removeEventListener('click', handler);
     }
