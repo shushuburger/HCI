@@ -681,7 +681,6 @@ if (alertBtn) {
 
 
 function showAlertBox(htmlContent) {
-  console.log('제발!!!!');
   const anchor = document.getElementById('calendarBtn'); // 기준 요소를 calendarBtn으로 변경
   let box = document.getElementById('calendar-alert-box');
 
@@ -704,8 +703,7 @@ function showAlertBox(htmlContent) {
   const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
 
   box.style.top = `${rect.bottom + scrollTop + 6}px`;  // 아래쪽 여백 포함
-  box.style.left = `${rect.left + scrollLeft + rect.width / 2 - 30}px`; // 가운데 정렬
-  box.style.transform = 'translateX(-50%)'; // 가운데 정렬 보정
+  box.style.left = `${rect.right + scrollLeft - 250}px`; // 화면에서 안 나가게 오른쪽 끝 정렬
 
   box.innerHTML = htmlContent;
   box.style.display = 'block';
