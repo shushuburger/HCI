@@ -640,14 +640,19 @@ function showAlertBox(htmlContent) {
     box.className = 'popover-box';
     box.style.position = 'absolute';
     box.style.zIndex = '9999';
-    box.style.top = `${alertBtn.offsetTop + alertBtn.offsetHeight + 6}px`;
-    box.style.left = `${alertBtn.offsetLeft}px`;
+
+    const rect = alertBtn.getBoundingClientRect();
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+
+    box.style.top = `${rect.bottom + scrollTop + 6}px`;
+    box.style.left = `${rect.left + scrollLeft + rect.width / 2}px`;
+    box.style.transform = 'translateX(-50%)';
     box.style.marginTop = '0px';
     box.style.textAlign = 'left';
     box.style.width = '250px';
-    box.style.transform = 'translateX(-50%)';
-    alertBtn.parentNode.style.position = 'relative';
-    alertBtn.parentNode.appendChild(box);
+
+    document.body.appendChild(box);
   }
   box.innerHTML = htmlContent;
   box.style.display = 'block';
