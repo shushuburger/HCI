@@ -428,8 +428,8 @@ function getGradeText(type, value) {
     if (value <= 30) return `좋음 (${value})`;
     if (value <= 55) return `양호 (${value})`;
     if (value <= 80) return `보통 (${value})`;
-    if (value <= 115) return `나쁨 (${value})`;
-    if (value <= 150) return `심각 (${value})`;
+    if (value <= 115) return `주의 (${value})`;
+    if (value <= 150) return `나쁨 (${value})`;
     return `매우 나쁨 (${value})`;
   }
 
@@ -438,8 +438,8 @@ function getGradeText(type, value) {
     if (value <= 15) return `좋음 (${value})`;
     if (value <= 25) return `양호 (${value})`;
     if (value <= 35) return `보통 (${value})`;
-    if (value <= 55) return `나쁨 (${value})`;
-    if (value <= 75) return `심각 (${value})`;
+    if (value <= 55) return `주의 (${value})`;
+    if (value <= 75) return `나쁨 (${value})`;
     return `매우 나쁨 (${value})`;
   }
 
@@ -448,8 +448,8 @@ function getGradeText(type, value) {
     if (value <= 0.03) return `좋음 (${value})`;
     if (value <= 0.06) return `양호 (${value})`;
     if (value <= 0.09) return `보통 (${value})`;
-    if (value <= 0.12) return `나쁨 (${value})`;
-    if (value <= 0.15) return `심각 (${value})`;
+    if (value <= 0.12) return `주의 (${value})`;
+    if (value <= 0.15) return `나쁨 (${value})`;
     return `매우 나쁨 (${value})`;
   }
 
@@ -662,8 +662,8 @@ if (alertBtn) {
                       else if (pm10 <= 30) grade = '좋음';
                       else if (pm10 <= 55) grade = '양호';
                       else if (pm10 <= 80) grade = '보통';
-                      else if (pm10 <= 115) grade = '나쁨';
-                      else if (pm10 <= 150) grade = '심각';
+                      else if (pm10 <= 115) grade = '주의';
+                      else if (pm10 <= 150) grade = '나쁨';
                       else grade = '매우 나쁨';
 
                       pm10Text = `PM10: ${pm10.toFixed(1)} (${grade})`;
