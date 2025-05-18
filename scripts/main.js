@@ -192,8 +192,8 @@ function getColorByPm10(pm10) {
   if (pm10 === null || pm10 === undefined || isNaN(pm10)) return '#7F7F7F';
   if (pm10 <= 15) return '#4285F4';
   if (pm10 <= 30) return '#9CD5F9';
-  if (pm10 <= 55) return '#B5E61D';
-  if (pm10 <= 80) return '#22B14C';
+  if (pm10 <= 55) return '#22B14C';
+  if (pm10 <= 80) return '#B5E61D';
   if (pm10 <= 115) return '#FFD400';
   if (pm10 <= 150) return '#FF7F27';
   return '#F52020';
@@ -203,8 +203,8 @@ function getColorByPm25(pm25) {
   if (pm25 === null || pm25 === undefined || isNaN(pm25)) return '#7F7F7F';
   if (pm25 <= 7.5) return '#4285F4';
   if (pm25 <= 15) return '#9CD5F9';
-  if (pm25 <= 25) return '#B5E61D';
-  if (pm25 <= 35) return '#22B14C';
+  if (pm25 <= 25) return '#22B14C';
+  if (pm25 <= 35) return '#B5E61D';
   if (pm25 <= 55) return '#FFD400';
   if (pm25 <= 75) return '#FF7F27';
   return '#F52020';
@@ -214,8 +214,8 @@ function getColorByO3(o3) {
   if (o3 === null || o3 === undefined || isNaN(o3)) return '#7F7F7F';
   if (o3 <= 0.015) return '#4285F4';
   if (o3 <= 0.03) return '#9CD5F9';
-  if (o3 <= 0.06) return '#B5E61D';
-  if (o3 <= 0.09) return '#22B14C';
+  if (o3 <= 0.06) return '#22B14C';
+  if (o3 <= 0.09) return '#B5E61D';
   if (o3 <= 0.12) return '#FFD400';
   if (o3 <= 0.15) return '#FF7F27';
   return '#F52020';
