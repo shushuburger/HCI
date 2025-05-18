@@ -335,7 +335,7 @@ function updateGraphSection(pm10, pm25, o3) {
           borderRadius: 5
         }]
       },
-options: {
+      options: {
         responsive: true,
         plugins: {
           legend: { display: false },
@@ -384,7 +384,7 @@ options: {
           borderRadius: 5
         }]
       },
-options: {
+      options: {
         responsive: true,
         plugins: {
           legend: { display: false },
@@ -570,4 +570,59 @@ function moveToMyLocation() {
       timeText.textContent = formatTime(new Date());
     }
   );
+}
+
+// 📍 index.html과 연결된 main.js 파일 내부에 아래 코드 추가
+
+const alertBtn = document.getElementById('alertBtn');
+
+if (alertBtn) {
+  alertBtn.addEventListener('click', () => {
+    const accessToken = localStorage.getItem('access_token');
+    if (!accessToken) {
+      alert('캘린더에 접근하려면 먼저 로그인해야 합니다.');
+      return;
+    }
+
+    gapi.load('client', () => {
+      gapi.client.init({
+        apiKey: 'AIzaSyCj5cR1M_IWWo2ApvMTDtkS1Wgwb7pHIeU',
+        discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest']
+      }).then(() => {
+        gapi.client.setToken({ access_token: accessToken });
+
+        const startOfDay = new Date();
+        startOfDay.setHours(0, 0, 0, 0);
+        const endOfDay = new Date();
+        endOfDay.setHours(23, 59, 59, 999);
+
+        return gapi.client.calendar.events.list({
+          calendarId: 'primary',
+          timeMin: startOfDay.toISOString(),
+          timeMax: endOfDay.toISOString(),
+          showDeleted: false,
+          singleEvents: true,
+          orderBy: 'startTime'
+        });
+      }).then(res => {
+        const events = res.result.items;
+        if (!events || events.length === 0) {
+          alert('오늘 등록된 일정이 없습니다.');
+          return;
+        }
+
+        const lines = events.map(e => {
+          const start = e.start?.dateTime || e.start?.date;
+          const date = new Date(start);
+          const time = date.toTimeString().substring(0, 5);
+          return `${time}: ${e.summary || '제목 없음'} (${e.location || '장소 미정'})`;
+        });
+
+        alert('📅 오늘의 일정\n\n' + lines.join('\n'));
+      }).catch(err => {
+        console.error('⛔ 알림 불러오기 오류:', err);
+        alert('일정을 불러오는 데 실패했습니다.');
+      });
+    });
+  });
 }
