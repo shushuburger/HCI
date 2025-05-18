@@ -634,26 +634,24 @@ if (alertBtn) {
 
 function showAlertBox(htmlContent) {
   let box = document.getElementById('calendar-alert-box');
+  const container = alertBtn.parentNode; // .ms-auto
+
   if (!box) {
     box = document.createElement('div');
     box.id = 'calendar-alert-box';
     box.className = 'popover-box';
     box.style.position = 'absolute';
     box.style.zIndex = '9999';
-
-    const rect = alertBtn.getBoundingClientRect();
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
-
-    box.style.top = `${rect.bottom + scrollTop + 6}px`;
-    box.style.left = `${rect.left + scrollLeft + rect.width / 2 - 20}px`;
-    box.style.transform = 'translateX(-50%)';
-    box.style.marginTop = '0px';
-    box.style.textAlign = 'left';
     box.style.width = '250px';
+    box.style.textAlign = 'left';
+    box.style.marginTop = '6px';
+    box.style.top = '100%'; // 버튼 아래
+    box.style.right = '0';  // 오른쪽 정렬
 
-    document.body.appendChild(box);
+    container.style.position = 'relative'; // 기준 위치 지정
+    container.appendChild(box);
   }
+
   box.innerHTML = htmlContent;
   box.style.display = 'block';
 
