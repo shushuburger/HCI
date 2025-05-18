@@ -573,6 +573,7 @@ function moveToMyLocation() {
 }
 
 // 📍 index.html과 연결된 main.js 파일 내부에 아래 코드 추가
+
 const alertBtn = document.getElementById('alertBtn');
 
 if (alertBtn) {

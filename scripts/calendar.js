@@ -206,7 +206,7 @@ if (alertBtn) {
 
 
 function showAlertBox(htmlContent) {
-  const anchor = document.getElementById('calendarBtn');
+  const anchor = document.getElementById('homeBtn');
   let box = document.getElementById('calendar-alert-box');
 
   if (!box) {
@@ -216,11 +216,8 @@ function showAlertBox(htmlContent) {
     box.style.position = 'absolute';
     box.style.zIndex = '9999';
     box.style.width = '250px';
-    box.style.maxWidth = '90vw';
     box.style.textAlign = 'left';
     box.style.marginTop = '6px';
-    box.style.whiteSpace = 'normal';
-    box.style.overflowWrap = 'break-word';
 
     document.body.appendChild(box);
   }
@@ -230,7 +227,7 @@ function showAlertBox(htmlContent) {
   const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
 
   box.style.top = `${rect.bottom + scrollTop + 6}px`;
-  box.style.left = `${rect.left + scrollLeft}px`;
+  box.style.left = `${rect.right + scrollLeft - 70}px`;
 
   box.innerHTML = htmlContent;
   box.style.display = 'block';
