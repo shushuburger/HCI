@@ -580,7 +580,12 @@ if (alertBtn) {
   alertBtn.addEventListener('click', () => {
     const accessToken = localStorage.getItem('access_token');
     if (!accessToken) {
-      alert('캘린더에 접근하려면 먼저 로그인해야 합니다.');
+      showAlertBox('⚠️ Google 계정에 먼저 로그인해주세요.');
+      return;
+    }
+
+    if (typeof gapi === 'undefined') {
+      showAlertBox('⚠️ Google API가 아직 로드되지 않았습니다.');
       return;
     }
 
@@ -607,7 +612,7 @@ if (alertBtn) {
       }).then(res => {
         const events = res.result.items;
         if (!events || events.length === 0) {
-          alert('오늘 등록된 일정이 없습니다.');
+          showAlertBox('📅 오늘 등록된 일정이 없습니다.');
           return;
         }
 
@@ -618,11 +623,37 @@ if (alertBtn) {
           return `${time}: ${e.summary || '제목 없음'} (${e.location || '장소 미정'})`;
         });
 
-        alert('📅 오늘의 일정\n\n' + lines.join('\n'));
+        showAlertBox('<strong>📅 오늘의 일정</strong><br>' + lines.join('<br>'));
       }).catch(err => {
         console.error('⛔ 알림 불러오기 오류:', err);
-        alert('일정을 불러오는 데 실패했습니다.');
+        showAlertBox('일정을 불러오는 데 실패했습니다.');
       });
     });
+  });
+}
+
+function showAlertBox(htmlContent) {
+  let box = document.getElementById('calendar-alert-box');
+  if (!box) {
+    box = document.createElement('div');
+    box.id = 'calendar-alert-box';
+    box.className = 'popover-box';
+    box.style.top = '100%';
+    box.style.left = '50%';
+    box.style.transform = 'translateX(-50%)';
+    box.style.marginTop = '10px';
+    box.style.textAlign = 'left';
+    box.style.width = '250px';
+    alertBtn.parentNode.appendChild(box);
+  }
+  box.innerHTML = htmlContent;
+  box.style.display = 'block';
+
+  // 외부 클릭 시 닫기
+  document.addEventListener('click', function handler(e) {
+    if (!alertBtn.contains(e.target) && !box.contains(e.target)) {
+      box.style.display = 'none';
+      document.removeEventListener('click', handler);
+    }
   });
 }
