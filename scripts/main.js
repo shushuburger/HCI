@@ -795,7 +795,7 @@ function updateSolutionGuide() {
           { keyword: /(산책|운동)/, icon: 'walk.png', alt: '산책 아이콘' },
         ];
 
-        const lines = match.대처방안.split('\\n');
+        const lines = match.대처방안.split('\n');
         recommendationsBox.innerHTML = lines.map(line => {
           const icon = iconMap.find(i => i.keyword.test(line));
           if (icon) {
