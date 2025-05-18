@@ -646,7 +646,7 @@ function showAlertBox(htmlContent) {
     const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
 
     box.style.top = `${rect.bottom + scrollTop + 6}px`;
-    box.style.left = `${rect.left + scrollLeft + rect.width / 2}px`;
+    box.style.left = `${rect.left + scrollLeft + rect.width / 2 - 20}px`;
     box.style.transform = 'translateX(-50%)';
     box.style.marginTop = '0px';
     box.style.textAlign = 'left';
