@@ -723,3 +723,77 @@ function showAlertBox(htmlContent) {
     }
   });
 }
+
+// 행동 방안 보여주기
+////////////////////////////////////////////////////////////////////////
+
+// ✅ 맞춤형 대처방안 자동 변경 기능 추가
+const ageSelect = document.getElementById('ageSelect');
+const healthSelect = document.getElementById('healthSelect');
+const activitySelect = document.getElementById('activitySelect');
+const recommendationsBox = document.querySelector('.recommendations');
+
+function getLevelForJson(value) {
+  if (value === null || isNaN(value)) return '정보 없음';
+
+  if (value <= 30) return '좋음';
+  if (value <= 80) return '보통';
+  if (value <= 150) return '나쁨';
+  return '매우 나쁨';
+}
+
+function updateSolutionGuide() {
+  const ageMap = {
+    kid: '유아/어린이',
+    adult: '성인',
+    elderly: '고령자'
+  };
+
+  const healthMap = {
+    healthy: '건강함',
+    asthma: '천식/호흡기질환',
+    allergy: '알레르기/비염'
+  };
+
+  const activityMap = {
+    indoor: '주로 실내활동',
+    outdoor: '주로 야외활동'
+  };
+
+  const ageText = ageMap[ageSelect.value];
+  const healthText = healthMap[healthSelect.value];
+  const activityText = activityMap[activitySelect.value];
+
+  const locationText = document.getElementById('location');
+  const pollutantValue = groupAvgMap[locationText.textContent]?.PM10;
+  const pollutantLevel = getLevelForJson(pollutantValue);
+
+  fetch('./assets/data/solution.json')
+    .then(res => res.json())
+    .then(data => {
+      const match = data.find(item =>
+        item.연령대 === ageText &&
+        item.건강상태 === healthText &&
+        item.활동유형 === activityText &&
+        item.미세먼지등급 === pollutantLevel
+      );
+
+      if (match) {
+        const lines = match.대처방안.split('\n');
+        recommendationsBox.innerHTML = lines.map(line => `<p>💡 ${line}</p>`).join('');
+      } else {
+        recommendationsBox.innerHTML = '<p>❗ 해당 조건에 맞는 대처방안을 찾을 수 없습니다.</p>';
+      }
+    })
+    .catch(err => {
+      console.error('⛔ 대처방안 로딩 실패:', err);
+      recommendationsBox.innerHTML = '<p>❌ 대처방안을 불러오는 데 실패했습니다.</p>';
+    });
+}
+
+ageSelect.addEventListener('change', updateSolutionGuide);
+healthSelect.addEventListener('change', updateSolutionGuide);
+activitySelect.addEventListener('change', updateSolutionGuide);
+
+// 페이지 초기 로드시 1회 실행
+updateSolutionGuide();
