@@ -573,6 +573,7 @@ function moveToMyLocation() {
 }
 
 // 📍 index.html과 연결된 main.js 파일 내부에 아래 코드 추가
+// 포항에서의 컨테이너 단위에서 Google 캐링더 일정을 검색하고 PM10 정보를 포함해 보여줍니다.
 
 const alertBtn = document.getElementById('alertBtn');
 
@@ -657,7 +658,16 @@ if (alertBtn) {
                   if (fullRegionName) {
                     const pm10 = groupAvgMap[fullRegionName]?.PM10;
                     if (pm10 !== undefined) {
-                      pm10Text = ` - PM10: ${pm10.toFixed(1)}`;
+                      let grade = '';
+                      if (pm10 <= 15) grade = '매우 좋음';
+                      else if (pm10 <= 30) grade = '좋음';
+                      else if (pm10 <= 55) grade = '양호';
+                      else if (pm10 <= 80) grade = '보통';
+                      else if (pm10 <= 115) grade = '나쁨';
+                      else if (pm10 <= 150) grade = '심각';
+                      else grade = '매우 나쁨';
+
+                      pm10Text = `PM10: ${pm10.toFixed(1)} (${grade})`;
                     }
                   }
                 }
@@ -667,10 +677,10 @@ if (alertBtn) {
             }
           }
 
-          return `${time}: ${summary} (${location})${pm10Text}`;
+          return `${time}: ${summary}<br>${location}<br>${pm10Text}`;
         }));
 
-        showAlertBox('<strong>📅 오늘의 일정</strong><br>' + lines.join('<br>'));
+        showAlertBox('<strong>📅 오늘의 일정</strong><br>' + lines.join('<br><br>'));
       } catch (err) {
         console.error('⛔ 일정 조회 실패:', err);
         showAlertBox('일정을 불러오는 데 실패했습니다.');
@@ -681,7 +691,7 @@ if (alertBtn) {
 
 
 function showAlertBox(htmlContent) {
-  const anchor = document.getElementById('calendarBtn'); // 기준 요소를 calendarBtn으로 변경
+  const anchor = document.getElementById('calendarBtn');
   let box = document.getElementById('calendar-alert-box');
 
   if (!box) {
@@ -697,18 +707,16 @@ function showAlertBox(htmlContent) {
     document.body.appendChild(box);
   }
 
-  // 위치 계산
   const rect = anchor.getBoundingClientRect();
   const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
   const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
 
-  box.style.top = `${rect.bottom + scrollTop + 6}px`;  // 아래쪽 여백 포함
-  box.style.left = `${rect.right + scrollLeft - 250}px`; // 화면에서 안 나가게 오른쪽 끝 정렬
+  box.style.top = `${rect.bottom + scrollTop + 6}px`;
+  box.style.left = `${rect.right + scrollLeft - 30}px`;
 
   box.innerHTML = htmlContent;
   box.style.display = 'block';
 
-  // 외부 클릭 시 닫기
   document.addEventListener('click', function handler(e) {
     if (!anchor.contains(e.target) && !box.contains(e.target)) {
       box.style.display = 'none';
