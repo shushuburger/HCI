@@ -6,6 +6,43 @@ let geojsonLayer;
 let map;
 let codeToFullnameMap = {};
 let groupAvgMap = {};
+let currentDataFile = './assets/data/group_avg_good.json'; // 기본 파일
+
+const toggleDataBtn = document.getElementById('toggleDataBtn');
+
+if (toggleDataBtn) {
+  toggleDataBtn.addEventListener('click', () => {
+    currentDataFile = currentDataFile.includes('good')
+      ? './assets/data/group_avg_bad.json'
+      : './assets/data/group_avg_good.json';
+
+    // 다시 group_avgMap과 geojsonLayer 재로드
+    fetch(currentDataFile)
+      .then(res => res.json())
+      .then(avgMap => {
+        groupAvgMap = avgMap;
+
+        // 지도 스타일 업데이트
+        updateMapStyle();
+
+        // 현재 위치에 대한 대기질 및 차트 갱신
+        const location = document.getElementById('location')?.textContent;
+        const avg = groupAvgMap[location];
+        if (avg) {
+          const pm10 = avg?.PM10?.toFixed(1);
+          const pm25 = avg?.['PM2.5']?.toFixed(1);
+          const o3 = avg?.오존?.toFixed(3);
+          updateGraphSection(pm10, pm25, o3);
+        }
+
+        updateSolutionGuide(); // 대처방안도 새로고침
+      })
+      .catch(err => {
+        console.error('❌ 데이터 전환 실패:', err);
+        alert('데이터 전환 중 오류가 발생했습니다.');
+      });
+  });
+}
 
 pm10Btn.addEventListener('click', () => {
   pm10Btn.classList.add('btn-primary');
@@ -57,7 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
     .then(res => res.json())
     .then(codeMap => {
       codeToFullnameMap = codeMap;
-      return fetch('./assets/data/group_avg.json');
+      return fetch(currentDataFile);
     })
     .then(res => res.json())
     .then(avgMap => {
