@@ -458,7 +458,7 @@ function updateGraphSection(pm10, pm25, o3) {
       }]
     });
   }
-  if (levelSelect) levelSelect.value = getLevelForJson(pm10Value);
+  // if (levelSelect) levelSelect.value = getLevelForJson(pm10Value);
 }
 
 function getGradeText(type, value) {
