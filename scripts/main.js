@@ -458,6 +458,7 @@ function updateGraphSection(pm10, pm25, o3) {
       }]
     });
   }
+  if (levelSelect) levelSelect.value = getLevelForJson(pm10Value);
 }
 
 function getGradeText(type, value) {
@@ -771,6 +772,7 @@ function showAlertBox(htmlContent) {
 const ageSelect = document.getElementById('ageSelect');
 const healthSelect = document.getElementById('healthSelect');
 const activitySelect = document.getElementById('activitySelect');
+const levelSelect = document.getElementById('levelSelect');
 const recommendationsBox = document.querySelector('.recommendations');
 
 function getLevelForJson(value) {
@@ -805,8 +807,11 @@ function updateSolutionGuide() {
   const activityText = activityMap[activitySelect.value];
 
   const locationText = document.getElementById('location');
-  const pollutantValue = groupAvgMap[locationText.textContent]?.PM10;
-  const pollutantLevel = getLevelForJson(pollutantValue);
+  let pollutantLevel = levelSelect.value;
+  if (!pollutantLevel) {
+    const pollutantValue = groupAvgMap[locationText.textContent]?.PM10;
+    pollutantLevel = getLevelForJson(pollutantValue);
+  }
 
   fetch('./assets/data/solution.json')
     .then(res => res.json())
@@ -855,6 +860,7 @@ function updateSolutionGuide() {
 ageSelect.addEventListener('change', updateSolutionGuide);
 healthSelect.addEventListener('change', updateSolutionGuide);
 activitySelect.addEventListener('change', updateSolutionGuide);
+levelSelect.addEventListener('change', updateSolutionGuide);
 
 // 검색 부분
 const searchBtn = document.getElementById('searchBtn');
