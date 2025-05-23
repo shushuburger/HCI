@@ -458,7 +458,7 @@ function updateGraphSection(pm10, pm25, o3) {
       }]
     });
   }
-  if (shouldUpdateLevelSelect && levelSelect) {
+  if (levelSelect && !isNaN(pm10Value)) {
     levelSelect.value = getLevelForJson(pm10Value);
   }
 }
