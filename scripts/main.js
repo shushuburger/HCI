@@ -855,3 +855,63 @@ function updateSolutionGuide() {
 ageSelect.addEventListener('change', updateSolutionGuide);
 healthSelect.addEventListener('change', updateSolutionGuide);
 activitySelect.addEventListener('change', updateSolutionGuide);
+
+// 검색 부분
+const searchBtn = document.getElementById('searchBtn');
+const searchInput = document.getElementById('searchInput');
+
+searchBtn.addEventListener('click', () => {
+  const query = searchInput.value.trim();
+  if (!query) {
+    alert('검색어를 입력해주세요.');
+    return;
+  }
+
+  // 유사 일치: query가 포함된 codeToFullnameMap의 full을 찾음
+  const matched = Object.entries(codeToFullnameMap).find(([_, value]) =>
+    value.full.includes(query)
+  );
+
+  if (!matched) {
+    alert('해당 지역을 찾을 수 없습니다.');
+    return;
+  }
+
+  const [matchedCode, matchedValue] = matched;
+  const fullName = matchedValue.full;
+
+  const geojsonFeature = geojsonLayer.getLayers().find(layer => {
+    const code = layer.feature.properties.code.toString().padStart(5, '0');
+    return code === matchedCode;
+  });
+
+  if (!geojsonFeature) {
+    alert('지도에서 해당 지역을 찾을 수 없습니다.');
+    return;
+  }
+
+  const center = getFeatureCenter(geojsonFeature.feature.geometry);
+  map.setView(center, 11);
+  document.getElementById('location').textContent = fullName;
+  document.getElementById('time').textContent = formatTime(new Date());
+
+  const avg = groupAvgMap[fullName];
+  if (avg) {
+    const pm10 = avg?.PM10?.toFixed(1);
+    const pm25 = avg?.['PM2.5']?.toFixed(1);
+    const o3 = avg?.오존?.toFixed(3);
+
+    updateGraphSection(pm10, pm25, o3);
+    updateSolutionGuide();
+
+    L.popup()
+      .setLatLng(center)
+      .setContent(`
+        <strong>${fullName}</strong><br>
+        PM10: ${pm10 ?? '-'}<br>
+        PM2.5: ${pm25 ?? '-'}<br>
+        O₃: ${o3 ?? '-'}
+      `)
+      .openOn(map);
+  }
+});
