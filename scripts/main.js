@@ -207,6 +207,10 @@ function updateGaugeImage() {
 }
 
 function updateMapStyle() {
+    if (!geojsonLayer) {
+    console.warn('⚠️ geojsonLayer가 아직 준비되지 않았습니다.');
+    return;
+  }
   geojsonLayer.setStyle(feature => getStyleByPollutant(feature));
 }
 
