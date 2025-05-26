@@ -230,8 +230,8 @@ function getStyleByPollutant(feature) {
 
 function getColorByPm10(pm10) {
   if (pm10 === null || pm10 === undefined || isNaN(pm10)) return '#7F7F7F';
-  if (pm10 <= 15) return '#4285F4';
-  if (pm10 <= 30) return '#9CD5F9';
+  if (pm10 <= 15) return '#1A39FF';
+  if (pm10 <= 30) return '#3DA4FF';
   if (pm10 <= 55) return '#22B14C';
   if (pm10 <= 80) return '#B5E61D';
   if (pm10 <= 115) return '#FFD400';
