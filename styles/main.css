@@ -61,11 +61,10 @@ body {
     font-weight: bold;
 }
 
-
 /* 지도 영역 */
 #map {
     width: 100%;
-    height: 100vh;
+    height: 700px;
     background-color: white;
 }
 
@@ -90,7 +89,9 @@ body {
 
 .map-section {
     text-align: center;
-    padding: 1rem;
+    padding: 0;
+    margin-top: 1rem;
+    height: 100%;
 }
 
 #seoulMap {
@@ -138,73 +139,51 @@ body {
 #pm25,
 #o3 {
     font-size: 25px;
-    /* 또는 원하는 크기 */
     font-weight: bold;
 }
 
-.text-grade1 {
-    color: #4285F4 !important;
-}
-
-.text-grade2 {
-    color: #9CD5F9 !important;
-}
-
-.text-grade3 {
-    color: #22B14C !important;
-}
-
-.text-grade4 {
-    color: #B5E61D !important;
-}
-
-.text-grade5 {
-    color: #FFD400 !important;
-}
-
-.text-grade6 {
-    color: #FF7F27 !important;
-}
-
-.text-grade7 {
-    color: #F52020 !important;
-}
-
-.graph-section .gauge canvas {
-  margin-bottom: 0.25rem; /* 그래프 아래 공간 줄이기 */
-  padding: 0;
-}
-
-.graph-section .gauge p {
-  margin: 0.25rem 0; /* 위아래 간격 최소화 */
-  font-size: 1.1rem;
-}
-
-.graph-section .gauge .infoBtn {
-  margin: 0.2rem; /* 버튼 위 여백 최소화 */
-  padding: 0;
-}
+.text-grade1 { color: #4285F4 !important; }
+.text-grade2 { color: #9CD5F9 !important; }
+.text-grade3 { color: #22B14C !important; }
+.text-grade4 { color: #B5E61D !important; }
+.text-grade5 { color: #FFD400 !important; }
+.text-grade6 { color: #FF7F27 !important; }
+.text-grade7 { color: #F52020 !important; }
 
 .graph-section {
     display: flex;
+    flex-wrap: nowrap;
     justify-content: space-between;
+    margin: 0 1rem 1rem 1rem;
     padding: 1rem;
-    gap: 1rem;
+    gap: 0.75rem;
 }
 
 .graph-section .gauge {
-    flex: 1;
+    flex: 1 1 0;
+    max-width: 33.33%;
     background-color: #ffffff;
     border-radius: 10px;
     padding: 1rem;
     text-align: center;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    min-width: 0;
+    min-height: 220px;
 }
 
-.gauge {
-    min-width: 220px;
-    min-height: 220px;
-    /* 예시 값, 상황에 따라 조절 */
+.graph-section .gauge canvas {
+    margin-bottom: 0.25rem;
+    padding: 0;
+}
+
+.graph-section .gauge p {
+    margin: 0.25rem 0;
+    font-size: 1.1rem;
+}
+
+.graph-section .gauge .infoBtn {
+    margin: 0.2rem;
+    padding: 0;
 }
 
 .graph-section .gauge h5 {
@@ -212,19 +191,19 @@ body {
 }
 
 .popover-box {
-  position: absolute;
-  top: 100%; /* 버튼 바로 아래 */
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #fff;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 10px 14px;
-  margin-top: 6px;
-  width: 200px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  z-index: 10;
-  font-size: 0.85rem;
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-top: 6px;
+    width: 200px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    z-index: 10;
+    font-size: 0.85rem;
 }
 
 /* 대처 방안 */
@@ -234,14 +213,18 @@ body {
 
 .selectors .form-select {
     min-width: 150px;
+    flex: 1;
+    max-width: 200px;
 }
 
 .guide-section {
     background-color: #ffffff;
-    margin: 1rem;
+    margin: 1rem 1rem 0.5rem 1rem;
     padding: 1rem;
     border-radius: 12px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin-bottom: 0;
+    overflow: hidden; /* 추가 */
 }
 
 .guide-section h2 {
@@ -252,14 +235,10 @@ body {
 .selectors {
     display: flex;
     justify-content: center;
+    flex-wrap: wrap; /* 추가 */
     gap: 1rem;
     margin-bottom: 1rem;
-}
-
-.selectors select {
-    padding: 0.5rem;
-    border-radius: 8px;
-    border: 1px solid #ccc;
+    padding: 0.5rem 1rem; /* 여백 추가 */
 }
 
 .recommendations {
@@ -269,13 +248,31 @@ body {
 }
 
 .recommendations p {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
 }
 
 .recommendations img {
-  width: 30px;
-  height: 30px;
+    width: 30px;
+    height: 30px;
+}
+
+/* row 높이 맞춤 */
+.container > .row {
+    align-items: stretch;
+}
+
+/* 반응형 대응 */
+@media (max-width: 991.98px) {
+    .graph-section {
+        flex-direction: column;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .graph-section .gauge {
+        max-width: 100%;
+    }
 }

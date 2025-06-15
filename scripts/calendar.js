@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (homeBtn) {
     homeBtn.addEventListener('click', () => {
-      window.location.href = 'index.html';
+      window.location.href = 'main.html';
     });
   }
 

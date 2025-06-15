@@ -1,3 +1,13 @@
+window.addEventListener('DOMContentLoaded', () => {
+  const age = localStorage.getItem('age');
+  const health = localStorage.getItem('health');
+  const activity = localStorage.getItem('activity');
+
+  if (age) document.getElementById('ageSelect').value = age;
+  if (health) document.getElementById('healthSelect').value = health;
+  if (activity) document.getElementById('activitySelect').value = activity;
+});
+
 const pm10Btn = document.getElementById('pm10Btn');
 const pm25Btn = document.getElementById('pm25Btn');
 
@@ -618,8 +628,6 @@ function moveToMyLocation() {
     }
   );
 }
-
-// 📍 index.html과 연결된 main.js 파일 내부에 아래 코드 추가
 
 const alertBtn = document.getElementById('alertBtn');
 
